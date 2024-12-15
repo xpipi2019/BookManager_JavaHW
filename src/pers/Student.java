@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * @author XPIPI
  */
-class Student extends Person implements Operation {
+public class Student extends Person implements Operation {
     // 数组ArrayList 存放已借阅书籍信息
     private ArrayList<Integer> borrowedBooks;
     // 定义学生最大可借阅书数量（final常量）
@@ -26,4 +26,5 @@ class Student extends Person implements Operation {
     public boolean returnBook(int bookId) {
         return false;
     }
+
 }

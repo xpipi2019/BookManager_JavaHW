@@ -1,39 +1,17 @@
 package pers;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import pers.frames.*;
 
+import javax.swing.*;
 /**
  * @author XPIPI
  */
 public class GUI {
-    // 创建JFrame对象
-    private JFrame frame;
-    // 创建bookList书籍对象
-    private ArrayList<Book> bookList;
-    // 定义书籍档案文件名(final常量)
-    private static final String FILE_NAME = "books.txt";
-
-    // 窗口显示方法 GUI()
-    public GUI() {
-        // 主窗口设定
-        frame = new JFrame("图书借阅系统");
-        frame.setSize(600, 400);
-        frame.setLayout(new BorderLayout(10, 10));
-
-        // 窗体退出事件
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-
-
-        // 显示窗口
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+    public GUI(){
+        /*
+            SwingUtilities.invokeLater()方法
+            使事件派发线程上的可运行对象排队 当可运行对象排在事件派发队列的队首时，就调用其run方法。其效果是允许事件派发线程调用另一个线程中的任意一个代码
+         */
+        SwingUtilities.invokeLater(() -> new StartFrame());
     }
 }
