@@ -11,7 +11,7 @@ import java.awt.event.WindowEvent;
 /**
  * @author XPIPI
  */
-// 界面三：老师管理界面 TeacherFrame
+// 界面三：老师使用界面 TeacherFrame
 public class TeacherFrame extends JFrame {
     private Teacher teacher;
 
@@ -19,7 +19,7 @@ public class TeacherFrame extends JFrame {
         this.teacher = teacher;
 
         // 设置窗口信息
-        setTitle("教师管理系统");
+        setTitle("图书借阅系统--老师");
         setLayout(new BorderLayout());
 
         // 窗体退出事件 登陆后退出：正常退出，返回0

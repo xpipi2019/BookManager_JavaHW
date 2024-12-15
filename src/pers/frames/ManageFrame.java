@@ -10,15 +10,15 @@ import java.awt.event.WindowEvent;
 /**
  * @author XPIPI
  */
-// 界面二：学生使用界面 StudentFrame
-public class StudentFrame extends JFrame {
+// 界面四：管理界面 ManageFrame
+public class ManageFrame extends JFrame {
     private Student student;
 
-    public StudentFrame(Student student) {
+    public ManageFrame(Student student) {
         this.student = student;
 
         // 设置窗口信息
-        setTitle("图书借阅系统--学生");
+        setTitle("图书借阅系统--管理系统");
         setLayout(new BorderLayout());
 
         // 窗体退出事件 登陆后退出：正常退出，返回0
