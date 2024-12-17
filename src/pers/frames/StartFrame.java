@@ -56,7 +56,7 @@ public class StartFrame extends JFrame {
         // 第一行：用户类型 userTypePanel
         JPanel userTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel userTypeLabel = new JLabel("用户类型:");
-        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生"});
+        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生","管理"});
         userTypePanel.add(userTypeLabel);
         userTypePanel.add(userTypeComboBox);
 
@@ -188,8 +188,10 @@ public class StartFrame extends JFrame {
                     // 打开对应用户界面 -在登录成功后调用-
                     if (selectedType.equals("教师")) {
                         new TeacherFrame(new Teacher(username, 1001, "男"));
-                    } else {
+                    } else if(selectedType.equals("学生")){
                         new StudentFrame(new Student(username, 1002, "女"));
+                    }else{
+                        new ManageFrame();
                     }
                     /*
                         该窗口不再需要使用，所以不用setVisible方法隐藏窗口

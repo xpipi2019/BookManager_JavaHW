@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author XPIPI
  */
-class Book implements Serializable {
+public class Book implements Serializable {
     // 重写toString
     @Override
     public String toString() {

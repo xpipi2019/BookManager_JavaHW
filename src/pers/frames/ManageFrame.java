@@ -1,7 +1,5 @@
 package pers.frames;
 
-import pers.Student;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -12,11 +10,8 @@ import java.awt.event.WindowEvent;
  */
 // 界面四：管理界面 ManageFrame
 public class ManageFrame extends JFrame {
-    private Student student;
 
-    public ManageFrame(Student student) {
-        this.student = student;
-
+    public ManageFrame() {
         // 设置窗口信息
         setTitle("图书借阅系统--管理系统");
         setLayout(new BorderLayout());
