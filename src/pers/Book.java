@@ -13,37 +13,39 @@ public class Book implements Serializable {
     // 重写toString
     @Override
     public String toString() {
-        return "书号: " + bookId +
-                ", 书名: " + title +
-                ", 作者: " + author +
-                ", 类别: " + type +
-                ", 状态: " + (isBorrowed ? "已借出" : "未借出");
+        return bookId +
+                "|《 " + title +
+                "》-- " + author;
     }
 
-    // 书号 int
+    // 书号 bookId
     private int bookId;
 
-    // 书名 String
+    // 书名 title
     private String title;
 
-    // 作者 String
+    // 作者 author
     private String author;
 
-    // 类别 String
-    private String type;
+    // 类别 bookType
+    private String bookType;
 
-    // 是否被借出 boolean
+    // 是否被借出 isBorrowed
     // True->被借出   False->未被借出
     private boolean isBorrowed;
+
+    // 借阅人ID borrowedById
+    private int borrowedById;
 
     // 初始化构造函数
     public Book(int bookId, String title, String author, String type) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
-        this.type = type;
-        // 默认状态为 False->未被借出
+        this.bookType = type;
+        // 默认状态为 借出状态->False 借阅人->0
         this.isBorrowed = false;
+        this.borrowedById = 0;
     }
 
     // 返回书的属性的函数 以及修改书的属性的函数
@@ -72,12 +74,12 @@ public class Book implements Serializable {
         this.author = author;
     }
 
-    public String getType() {
-        return type;
+    public String getBookType() {
+        return bookType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setBookType(String bookType) {
+        this.bookType = bookType;
     }
 
     public boolean isBorrowed() {
@@ -86,5 +88,13 @@ public class Book implements Serializable {
 
     public void setBorrowed(boolean nowStatus) {
         this.isBorrowed = nowStatus;
+    }
+
+    public int getBorrowedById() {
+        return borrowedById;
+    }
+
+    public void setBorrowedById(int borrowedById) {
+        this.borrowedById = borrowedById;
     }
 }

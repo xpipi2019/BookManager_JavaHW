@@ -1,7 +1,7 @@
 package pers.frames;
 
 
-import pers.Teacher;
+import pers.roles.Teacher;
 
 import javax.swing.*;
 import java.awt.*;

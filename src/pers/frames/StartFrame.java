@@ -1,8 +1,8 @@
 package pers.frames;
 
-import pers.Student;
-import pers.Teacher;
-import pers.User;
+import pers.roles.Person;
+import pers.roles.Student;
+import pers.roles.Teacher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,16 +27,22 @@ public class StartFrame extends JFrame {
     private JPasswordField passwordField;
     // 存储所有用户 HashMap<K,V>
     private Map<String, User> usersMap;
+    // 存储所有用户 HashMap<K,V>
+    private Map<String, Person> personsMap;
     // 记住密码选择框 JCheckBox
     private JCheckBox rememberMeBox;
     // 定义配置文件名常量 String
     // 用来保存一些功能设置，在每次打开时加载
     private final String CONFIG_FILE = "config.ini";
+    // 定义用户件名常量 String
+    private final String USERS_FILE = "users.txt";
+    private final String PERSONS_FILE = "persons.txt";
 
     // 初始化登录界面
     public StartFrame() {
-        // 加载用户数据 loadUserData()
+        // 加载用户数据 loadUserData() loadPersonData()
         loadUserData();
+        loadPersonData();
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
@@ -101,15 +107,35 @@ public class StartFrame extends JFrame {
     // 加载用户数据 loadUserData()
     private void loadUserData() {
         usersMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    String type = parts[0];
+                    String username = parts[1];
+                    String password = parts[2];
+                    String isWho = parts[3];
+                    usersMap.put(username, new User(type, username, password,isWho));
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "用户数据文件加载失败: " + e.getMessage(),
+                    "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadPersonData() {
+        personsMap = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(PERSONS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
-                    String type = parts[0];
-                    String username = parts[1];
-                    String password = parts[2];
-                    usersMap.put(username, new User(type, username, password));
+                    String name = parts[0];
+                    int id = Integer.parseInt(parts[1]);
+                    String gender = parts[2];
+                    personsMap.put(name, new Person(name, id, gender));
                 }
             }
         } catch (IOException e) {
@@ -178,7 +204,17 @@ public class StartFrame extends JFrame {
 
             // 登录验证
             if (usersMap.containsKey(username)) {
+                // 用户 user
                 User user = usersMap.get(username);
+                // 用户对应的人 person
+                Person person = personsMap.get(user.getIsWho());
+
+
+                // 获得person对象的所有信息
+                String person_name = person.getName();
+                int person_id = person.getId();
+                String person_gender = person.getGender();
+
                 if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
                     JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
 
@@ -186,10 +222,10 @@ public class StartFrame extends JFrame {
                     saveLoginInfo(username, password, rememberMeStatus);
 
                     // 打开对应用户界面 -在登录成功后调用-
-                    if (selectedType.equals("教师")) {
-                        new TeacherFrame(new Teacher(username, 1001, "男"));
-                    } else if(selectedType.equals("学生")){
-                        new StudentFrame(new Student(username, 1002, "女"));
+                    if ("教师".equals(selectedType)) {
+                        new TeacherFrame(new Teacher(person_name, person_id, person_gender));
+                    } else if("学生".equals(selectedType)){
+                        new StudentFrame(new Student(person_name, person_id, person_gender));
                     }else{
                         new ManageFrame();
                     }
