@@ -1,4 +1,8 @@
 package pers.frames;
+import java.util.logging.Logger;
+import pers.dao.DBUtil;
+import pers.dao.UserDao;
+import pers.dao.UserDaoImpl;
 
 import pers.roles.Person;
 import pers.roles.Student;
@@ -13,6 +17,11 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author XPIPI
@@ -40,9 +49,14 @@ public class StartFrame extends JFrame {
 
     // 初始化登录界面
     public StartFrame() {
-        // 加载用户数据 loadUserData() loadPersonData()
+        Logger logger = Logger.getLogger(StartFrame.class.getName());
+        logger.info("StartFrame 构造函数开始执行");
         loadUserData();
         loadPersonData();
+        // 使用接口加载用户数据
+        UserDao userDao = new UserDaoImpl();
+        usersMap = userDao.loadUserData();
+        personsMap = userDao.loadPersonData();
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
@@ -62,7 +76,7 @@ public class StartFrame extends JFrame {
         // 第一行：用户类型 userTypePanel
         JPanel userTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel userTypeLabel = new JLabel("用户类型:");
-        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生","管理"});
+        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生", "管理"});
         userTypePanel.add(userTypeLabel);
         userTypePanel.add(userTypeComboBox);
 
@@ -106,40 +120,42 @@ public class StartFrame extends JFrame {
 
     // 加载用户数据 loadUserData()
     private void loadUserData() {
+        Logger logger = Logger.getLogger(StartFrame.class.getName());
         usersMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    String type = parts[0];
-                    String username = parts[1];
-                    String password = parts[2];
-                    String isWho = parts[3];
-                    usersMap.put(username, new User(type, username, password,isWho));
-                }
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT type, username, password, is_who FROM users");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String type = resultSet.getString("type");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String isWho = resultSet.getString("is_who");
+                usersMap.put(username, new User(type, username, password, isWho));
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "用户数据文件加载失败: " + e.getMessage(),
+            logger.info("用户数据加载成功");
+        } catch (SQLException e) {
+            logger.severe("用户数据从数据库加载失败：" + e.getMessage());
+            JOptionPane.showMessageDialog(this, "用户数据从数据库加载失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void loadPersonData() {
+        Logger logger = Logger.getLogger(StartFrame.class.getName());
         personsMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(PERSONS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    String name = parts[0];
-                    int id = Integer.parseInt(parts[1]);
-                    String gender = parts[2];
-                    personsMap.put(name, new Person(name, id, gender));
-                }
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT name, id, gender FROM persons");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                int id = resultSet.getInt("id");
+                String gender = resultSet.getString("gender");
+                personsMap.put(name, new Person(name, id, gender));
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "用户数据文件加载失败: " + e.getMessage(),
+            logger.info("人员数据加载成功");
+        } catch (SQLException e) {
+            logger.severe("人员数据从数据库加载失败: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "人员数据从数据库加载失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -182,13 +198,14 @@ public class StartFrame extends JFrame {
 
     // 保存登录信息到配置文件 -在登录成功后调用-
     private void saveLoginInfo(String username, String password, boolean rememberMe) {
-        // BufferedWriter文件流 写入配置文件内容
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(CONFIG_FILE))) {
-            bw.write("username=" + (rememberMe ? username : "") + "\n");
-            bw.write("password=" + (rememberMe ? password : "") + "\n");
-            bw.write("rememberMe=" + rememberMe + "\n");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "保存登录信息失败: " + e.getMessage(),
+        String sql = "INSERT INTO login_history (id, username, login_time) VALUES (login_history_seq.nextval,?, SYSDATE)";
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(StartFrame.class.getName()).severe("保存登录信息到数据库失败，原因: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "保存登录信息到数据库失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -209,34 +226,37 @@ public class StartFrame extends JFrame {
                 // 用户对应的人 person
                 Person person = personsMap.get(user.getIsWho());
 
-
                 // 获得person对象的所有信息
-                String person_name = person.getName();
-                int person_id = person.getId();
-                String person_gender = person.getGender();
+                if (person!= null) {
+                    String person_name = person.getName();
+                    int person_id = person.getId();
+                    String person_gender = person.getGender();if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
+                        JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
 
-                if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
-                    JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
+                        // 保存登录信息 -在登录成功后调用-
+                        saveLoginInfo(username, password, rememberMeStatus);
 
-                    // 保存登录信息 -在登录成功后调用-
-                    saveLoginInfo(username, password, rememberMeStatus);
-
-                    // 打开对应用户界面 -在登录成功后调用-
-                    if ("教师".equals(selectedType)) {
-                        new TeacherFrame(new Teacher(person_name, person_id, person_gender));
-                    } else if("学生".equals(selectedType)){
-                        new StudentFrame(new Student(person_name, person_id, person_gender));
-                    }else{
-                        new ManageFrame();
-                    }
+                        // 打开对应用户界面 -在登录成功后调用-
+                        if ("教师".equals(selectedType)) {
+                            new TeacherFrame(new Teacher(person_name, person_id, person_gender));
+                        } else if ("学生".equals(selectedType)) {
+                            new StudentFrame(new Student(person_name, person_id, person_gender));
+                        } else {
+                            new ManageFrame();
+                        }
                     /*
                         该窗口不再需要使用，所以不用setVisible方法隐藏窗口
                         使用dispose方法关闭窗口，可以释放一部分资源
                      */
-                    dispose();
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(StartFrame.this, "用户名或密码错误！", "登录失败", JOptionPane.WARNING_MESSAGE);
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(StartFrame.this, "用户名或密码错误！", "登录失败", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(StartFrame.this, "获取人员信息失败，对应的Person对象为null，请检查数据！", "错误", JOptionPane.ERROR_MESSAGE);
                 }
+
+
             } else {
                 JOptionPane.showMessageDialog(StartFrame.this, "用户名不存在！", "登录失败", JOptionPane.WARNING_MESSAGE);
             }
