@@ -1,9 +1,5 @@
 package pers.roles;
-import pers.dao.DBUtil;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 /**
  * @author XPIPI
  */
@@ -34,10 +30,24 @@ public class Person {
         return name;
     }
 
-    public int getId() { return id; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getGender() {
         return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public int getBorrowedBooksCount() {
@@ -49,21 +59,11 @@ public class Person {
     }
 
     // 通过id来返回名字getNameById
-    public String getNameById(int id) {
-        String name = "无";
-        String sql = "SELECT name FROM persons WHERE id =?";
-        try (Connection connection = DBUtil.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)
-        ) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    name = resultSet.getString("name");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public String getNameById(int id){
+        if(this.id == id){
+            return this.name;
+        }else{
+            return "无";
         }
-        return name;
     }
 }

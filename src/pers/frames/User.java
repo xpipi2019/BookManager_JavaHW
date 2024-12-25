@@ -24,15 +24,28 @@ public class User {
         return type;
     }
 
+    void setType(String type) {
+        this.type = type;
+    }
+
     String getUsername() {
         return username;
+    }
+
+    void setUsername(String username) {
+        this.username = username;
     }
 
     String getPassword() {
         return password;
     }
 
+    void setPassword(String password) {
+        this.password = password;
+    }
+
     String getIsWho() {
         return isWho;
     }
+
 }
