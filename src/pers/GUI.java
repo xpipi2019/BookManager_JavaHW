@@ -1,6 +1,6 @@
 package pers;
 
-import pers.frames.*;
+import pers.frames.StartFrame;
 
 import javax.swing.*;
 /**
