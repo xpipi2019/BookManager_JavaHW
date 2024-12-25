@@ -2,13 +2,20 @@ package pers.frames;
 
 import pers.Book;
 import pers.roles.Student;
-import pers.util.BookOperate;
+import pers.dao.BookOperate;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import pers.dao.DBUtil;
 
 /**
  * @author XPIPI
@@ -128,19 +135,29 @@ public class StudentFrame extends JFrame {
     }
 
     private void refreshBooks(DefaultListModel<Book> bookListModel) {
-        // 列表数据置空
         bookListModel.clear();
         booksData.clear();
-
-        // 读取数据操作
-        BookOperate.readBookData(booksData,StudentFrame.this);
-
-        // 将读取到的图书依次加入到列表数据
-        for (Book book : booksData) {
-            bookListModel.addElement(book);
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT book_id, title, author, book_type, borrowed_by_id, is_borrowed FROM books");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int bookId = resultSet.getInt("book_id");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String bookType = resultSet.getString("book_type");
+                int borrowedById = resultSet.getInt("borrowed_by_id");
+                /*System.out.println("借阅人：" + borrowedById);*/
+                boolean isBorrowed = resultSet.getBoolean("is_borrowed");
+                Book book = new Book(bookId, title, author, bookType);
+                book.setBorrowed(isBorrowed);
+                book.setBorrowedById(borrowedById);
+                bookListModel.addElement(book);
+                booksData.add(book);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "图书数据从数据库读取失败: " + e.getMessage(),
+                    "错误", JOptionPane.ERROR_MESSAGE);
         }
-
-        // 再刷新用户借书量
         setStudentBorrowCount(student);
     }
 
@@ -159,7 +176,12 @@ public class StudentFrame extends JFrame {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook != null) {
             // 通过借阅人ID号来找到借阅人姓名
-            String whoBorrowedName = student.getNameById(selectedBook.getBorrowedById());
+            String whoBorrowedName;
+            if (selectedBook.getBorrowedById() == 0) {
+                whoBorrowedName = "未借出（无借阅人）";
+            } else {
+                whoBorrowedName = student.getNameById(selectedBook.getBorrowedById());
+            }
             bookInfoArea.setText(
                     "书号: " + selectedBook.getBookId() + "\n" +
                     "书名: " + selectedBook.getTitle() + "\n" +
@@ -186,10 +208,11 @@ public class StudentFrame extends JFrame {
         // 判断选中的书是否可借出
         if (selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书已经被借出！", "提示", JOptionPane.WARNING_MESSAGE);
-        } else if(student.getBorrowedBooksCount() > MAX_BORROW_LIMIT){
+        } else if(student.getBorrowedBooksCount() >= MAX_BORROW_LIMIT){
             JOptionPane.showMessageDialog(this, "您最多同时借三本书！", "提示", JOptionPane.WARNING_MESSAGE);
         } else{
-            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,StudentFrame.this);
+            /*System.out.println("即将传递给changeBookBorrowedStatus的student id值: " + student.getId());*/
+            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,student.getId(),StudentFrame.this);
             JOptionPane.showMessageDialog(this, "成功借阅书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
             updateBookInfo();
@@ -206,7 +229,7 @@ public class StudentFrame extends JFrame {
         if (!selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书没有被借出！", "提示", JOptionPane.WARNING_MESSAGE);
         } else if(selectedBook.getBorrowedById() == student.getId()) {
-            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,StudentFrame.this);
+            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,student.getId(),StudentFrame.this);
             JOptionPane.showMessageDialog(this, "成功归还书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
             updateBookInfo();

@@ -1,14 +1,9 @@
-package pers.util;
-
+package pers.utils;
 import pers.Book;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Base64;
 
-/**
- * @author XPIPI
- */
 public class Base64Util {
 
     // 加密并写入文件

@@ -13,7 +13,7 @@ public class User {
     // 对应了谁 isWho
     private String isWho;
 
-    User(String type, String username, String password, String isWho) {
+    public User(String type, String username, String password, String isWho) {
         this.type = type;
         this.username = username;
         this.password = password;
