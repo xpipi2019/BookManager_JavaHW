@@ -48,4 +48,6 @@ public class User {
         return isWho;
     }
 
+    void setIsWho(String isWho) { this.isWho = isWho; }
+
 }
