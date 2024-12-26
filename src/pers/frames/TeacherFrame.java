@@ -1,14 +1,18 @@
 package pers.frames;
 
-
 import pers.Book;
+import pers.dao.DBUtil;
+import pers.dao.BookOperate;
 import pers.roles.Teacher;
-import pers.util.BookOperate;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -48,7 +52,7 @@ public class TeacherFrame extends JFrame {
 
         // 学生信息标签 teacherInfoLabel
         JLabel teacherInfoLabel = new JLabel(
-                "姓名: " + teacher.getName() + " | 学号: " + teacher.getId() + " | 性别: " + teacher.getGender(),
+                "姓名: " + teacher.getName() + " | 工号: " + teacher.getId() + " | 性别: " + teacher.getGender(),
                 JLabel.CENTER);
 
         // topPanel -> teacherInfoLabel 居中
@@ -129,23 +133,35 @@ public class TeacherFrame extends JFrame {
     }
 
     private void refreshBooks(DefaultListModel<Book> bookListModel) {
-        // 列表数据置空
+        //列表数据置空
         bookListModel.clear();
         booksData.clear();
 
-        // 读取数据操作
-        BookOperate.readBookData(booksData,TeacherFrame.this);
-
-        // 将读取到的图书依次加入到列表数据
-        for (Book book : booksData) {
-            bookListModel.addElement(book);
+        //读取数据操作
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT book_id, title, author, book_type, borrowed_by_id, is_borrowed FROM books");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int bookId = resultSet.getInt("book_id");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String bookType = resultSet.getString("book_type");
+                int borrowedById = resultSet.getInt("borrowed_by_id");
+                boolean isBorrowed = resultSet.getBoolean("is_borrowed");
+                Book book = new Book(bookId, title, author, bookType);
+                book.setBorrowed(isBorrowed);
+                book.setBorrowedById(borrowedById);
+                bookListModel.addElement(book);
+                booksData.add(book);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "图书数据从数据库读取失败: " + e.getMessage(),
+                    "错误", JOptionPane.ERROR_MESSAGE);
         }
-
-        // 再刷新用户借书量
-        setStudentBorrowCount(teacher);
+        setTeacherBorrowCount(teacher);
     }
 
-    public void setStudentBorrowCount(Teacher teacher) {
+    public void setTeacherBorrowCount(Teacher teacher) {
         int Count = 0;
         for(Book book : booksData) {
             if(book.getBorrowedById() == teacher.getId()) {
@@ -160,7 +176,12 @@ public class TeacherFrame extends JFrame {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook != null) {
             // 通过借阅人ID号来找到借阅人姓名
-            String whoBorrowedName = teacher.getNameById(selectedBook.getBorrowedById());
+            String whoBorrowedName;
+            if (selectedBook.getBorrowedById() == 0) {
+                whoBorrowedName = "未借出";
+            } else {
+                whoBorrowedName = teacher.getNameById(selectedBook.getBorrowedById());
+            }
             bookInfoArea.setText(
                     "书号: " + selectedBook.getBookId() + "\n" +
                             "书名: " + selectedBook.getTitle() + "\n" +
@@ -187,10 +208,10 @@ public class TeacherFrame extends JFrame {
         // 判断选中的书是否可借出
         if (selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书已经被借出！", "提示", JOptionPane.WARNING_MESSAGE);
-        } else if(teacher.getBorrowedBooksCount() > MAX_BORROW_LIMIT){
-            JOptionPane.showMessageDialog(this, "您最多同时借三本书！", "提示", JOptionPane.WARNING_MESSAGE);
-        } else{
-            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,TeacherFrame.this);
+        } else if(teacher.getBorrowedBooksCount() >= MAX_BORROW_LIMIT){
+            JOptionPane.showMessageDialog(this, "您最多同时借五本书！", "提示", JOptionPane.WARNING_MESSAGE);
+        } else {
+            BookOperate.changeBookBorrowedStatus(booksData, selectedBook, teacher.getId(), TeacherFrame.this);
             JOptionPane.showMessageDialog(this, "成功借阅书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
             updateBookInfo();
@@ -207,7 +228,7 @@ public class TeacherFrame extends JFrame {
         if (!selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书没有被借出！", "提示", JOptionPane.WARNING_MESSAGE);
         } else if(selectedBook.getBorrowedById() == teacher.getId()) {
-            BookOperate.changeBookBorrowedStatus(booksData,selectedBook,TeacherFrame.this);
+            BookOperate.changeBookBorrowedStatus(booksData,selectedBook, teacher.getId(), TeacherFrame.this);
             JOptionPane.showMessageDialog(this, "成功归还书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
             updateBookInfo();

@@ -1,12 +1,19 @@
 package pers.frames;
 
 import pers.Book;
+import pers.dao.DBUtil;
 import pers.roles.Person;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -65,11 +72,11 @@ public class ManageFrame extends JFrame {
         dialog.setLayout(new BorderLayout());
 
         // 用户选择列表
-        DefaultListModel<User> userListModel = new DefaultListModel<>();
+        DefaultListModel<String> userListModel = new DefaultListModel<>();
         for (User user : usersMap.values()) {
-            userListModel.addElement(user);
+            userListModel.addElement(user.getIsWho()); // 显示用户名而不是对象引用
         }
-        JList<User> userList = new JList<>(userListModel);
+        JList<String> userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userScrollPane = new JScrollPane(userList);
 
@@ -91,15 +98,62 @@ public class ManageFrame extends JFrame {
 
         // 确定按钮
         JButton saveButton = new JButton("保存修改");
-        saveButton.addActionListener(e -> {
-            User selectedUser = userList.getSelectedValue();
-            if (selectedUser != null) {
-                selectedUser.setUsername(usernameField.getText());
-                selectedUser.setPassword(passwordField.getText());
-                selectedUser.setType(typeField.getText());
-                JOptionPane.showMessageDialog(dialog, "用户数据已成功修改！");
-            } else {
-                JOptionPane.showMessageDialog(dialog, "请选择一个用户！");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUsername = userList.getSelectedValue();
+                if (selectedUsername!= null) {
+                    User selectedUser = getUserByIswho(selectedUsername);
+                    String newUsername = usernameField.getText();
+                    String newPassword = passwordField.getText();
+                    String newType = typeField.getText();
+                    String newIsWho = isWhoField.getText();
+                    try (Connection connection = DBUtil.getConnection()) {
+                        // 更新用户数据的SQL语句
+                        String updateUserQuery = "UPDATE users SET username =?, password =?, type =?, is_who =? WHERE username =?";
+                        try (PreparedStatement userPreparedStatement = connection.prepareStatement(updateUserQuery)) {
+                            userPreparedStatement.setString(1, newUsername);
+                            userPreparedStatement.setString(2, newPassword);
+                            userPreparedStatement.setString(3, newType);
+                            userPreparedStatement.setString(4, newIsWho);
+                            userPreparedStatement.setString(5, selectedUser.getUsername());
+                            int userRowsAffected = userPreparedStatement.executeUpdate();
+
+                            if (userRowsAffected > 0) {
+                                // 更新成功后，同步更新本地缓存的 usersMap 数据
+                                selectedUser.setUsername(newUsername);
+                                selectedUser.setPassword(newPassword);
+                                selectedUser.setType(newType);
+                                selectedUser.setIsWho(newIsWho);
+
+                                // 更新 persons 表中对应人员的数据
+                                Person relatedPerson = personsMap.get(selectedUser.getIsWho());
+                                if (relatedPerson!= null) {
+                                    String updatePersonQuery = "UPDATE persons SET name =? WHERE id =?";
+                                    try (PreparedStatement personPreparedStatement = connection.prepareStatement(updatePersonQuery)) {
+                                        personPreparedStatement.setString(1, newIsWho);
+                                        personPreparedStatement.setInt(2, relatedPerson.getId());
+                                        int personRowsAffected = personPreparedStatement.executeUpdate();
+                                        if (personRowsAffected > 0) {
+                                            relatedPerson.setName(newIsWho);
+                                            JOptionPane.showMessageDialog(dialog, "用户数据和相关人员数据已成功修改！");
+                                        } else {
+                                            JOptionPane.showMessageDialog(dialog, "修改人员数据失败，可能人员不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(dialog, "未找到相关人员信息，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(dialog, "修改用户数据失败，可能用户不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(dialog, "修改用户数据出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "请选择一个用户！");
+                }
             }
         });
 
@@ -112,17 +166,27 @@ public class ManageFrame extends JFrame {
         dialog.setVisible(true);
     }
 
+    // 根据用户名从 usersMap 中获取用户对象
+    private User getUserByIswho(String is_who) {
+        for (User user : usersMap.values()) {
+            if (user.getIsWho().equals(is_who)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     // 打开查看用户借阅书籍的对话框
     private void openViewUserBooksDialog() {
         JDialog dialog = new JDialog(this, "查看用户借阅的书籍", true);
         dialog.setLayout(new BorderLayout());
 
         // 用户选择列表
-        DefaultListModel<User> userListModel = new DefaultListModel<>();
+        DefaultListModel<String > userListModel = new DefaultListModel<>();
         for (User user : usersMap.values()) {
-            userListModel.addElement(user);
+            userListModel.addElement(user.getIsWho());
         }
-        JList<User> userList = new JList<>(userListModel);
+        JList<String > userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userScrollPane = new JScrollPane(userList);
 
@@ -132,16 +196,27 @@ public class ManageFrame extends JFrame {
         JScrollPane booksScrollPane = new JScrollPane(borrowedBooksArea);
 
         userList.addListSelectionListener(e -> {
-            User selectedUser = userList.getSelectedValue();
-            if (selectedUser != null) {
+            String  selectedIswho = userList.getSelectedValue();
+            if (selectedIswho != null) {
                 borrowedBooksArea.setText(""); // 清空当前内容
-                Person person = personsMap.get(selectedUser.getIsWho());
-                if (person != null) {
-                    for (Book book : books) {
-                        if (book.getBorrowedById() == person.getId()) {
-                            borrowedBooksArea.append("书号: " + book.getBookId() +
-                                    " 书名: " + book.getTitle() + "\n");
+                User selectedUser = getUserByIswho(selectedIswho);
+                if (selectedUser != null) {
+                    Person person = personsMap.get(selectedUser.getIsWho());
+                    try (Connection connection = DBUtil.getConnection()) {
+                        String query = "SELECT book_id, title, book_type FROM books WHERE borrowed_by_id =?";
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                            preparedStatement.setInt(1, person.getId());
+                            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                                while (resultSet.next()) {
+                                    int bookId = resultSet.getInt("book_id");
+                                    String title = resultSet.getString("title");
+                                    String bookType = resultSet.getString("book_type");
+                                    borrowedBooksArea.append("书号: " + bookId + " 书名: 《" + title + "》类型: " + bookType + "\n");
+                                }
+                            }
                         }
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(dialog, "查询用户借阅书籍信息出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     borrowedBooksArea.setText("找不到对应的用户信息！");
@@ -189,10 +264,31 @@ public class ManageFrame extends JFrame {
         saveButton.addActionListener(e -> {
             Book selectedBook = bookList.getSelectedValue();
             if (selectedBook != null) {
-                selectedBook.setTitle(titleField.getText());
-                selectedBook.setAuthor(authorField.getText());
-                selectedBook.setBookType(bookTypeField.getText());
-                JOptionPane.showMessageDialog(dialog, "书籍信息已成功修改！");
+                String newTitle = titleField.getText();
+                String newAuthor = authorField.getText();
+                String newBookType = bookTypeField.getText();
+                try (Connection connection = DBUtil.getConnection()) {
+                    // 更新书籍信息的SQL语句
+                    String updateQuery = "UPDATE books SET title =?, author =?, book_type =? WHERE book_id =?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, newTitle);
+                        preparedStatement.setString(2, newAuthor);
+                        preparedStatement.setString(3, newBookType);
+                        preparedStatement.setInt(4, selectedBook.getBookId());
+                        int rowsAffected = preparedStatement.executeUpdate();
+                        if (rowsAffected > 0) {
+                            // 更新成功后，同步更新本地缓存的books数据
+                            selectedBook.setTitle(newTitle);
+                            selectedBook.setAuthor(newAuthor);
+                            selectedBook.setBookType(newBookType);
+                            JOptionPane.showMessageDialog(dialog, "书籍信息已成功修改！");
+                        } else {
+                            JOptionPane.showMessageDialog(dialog, "修改书籍信息失败，可能书籍不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(dialog, "修改书籍信息出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 JOptionPane.showMessageDialog(dialog, "请选择一本书！");
             }
@@ -206,4 +302,5 @@ public class ManageFrame extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
 }

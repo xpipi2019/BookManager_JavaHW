@@ -1,6 +1,9 @@
 package pers.frames;
 
 import pers.Book;
+import pers.dao.DBUtil;
+import pers.dao.UserDao;
+import pers.dao.UserDaoImpl;
 import pers.roles.Person;
 import pers.roles.Student;
 import pers.roles.Teacher;
@@ -12,11 +15,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import static pers.util.BookOperate.readBookData;
+import static pers.dao.BookOperate.readBookData;
 
 /**
  * @author XPIPI
@@ -47,6 +55,10 @@ public class StartFrame extends JFrame {
         // 加载用户数据 loadUserData() loadPersonData()
         loadUserData();
         loadPersonData();
+        // 使用接口加载用户数据
+        UserDao userDao = new UserDaoImpl();
+        usersMap = userDao.loadUserData();
+        personsMap = userDao.loadPersonData();
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
@@ -110,21 +122,22 @@ public class StartFrame extends JFrame {
 
     // 加载用户数据 loadUserData()
     private void loadUserData() {
+        Logger logger = Logger.getLogger(StartFrame.class.getName());
         usersMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    String type = parts[0];
-                    String username = parts[1];
-                    String password = parts[2];
-                    String isWho = parts[3];
-                    usersMap.put(username, new User(type, username, password,isWho));
-                }
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT type, username, password, is_who FROM users");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String type = resultSet.getString("type");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String isWho = resultSet.getString("is_who");
+                usersMap.put(username, new User(type, username, password, isWho));
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "用户数据文件加载失败: " + e.getMessage(),
+            logger.info("用户数据加载成功");
+        } catch (SQLException e) {
+            logger.severe("用户数据从数据库加载失败：" + e.getMessage());
+            JOptionPane.showMessageDialog(this, "用户数据从数据库加载失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
