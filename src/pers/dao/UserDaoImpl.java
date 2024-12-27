@@ -9,8 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class UserDaoImpl implements UserDao {
+    private static final Logger logger = Logger.getLogger(UserDaoImpl.class.getName());
+
     @Override
     public Map<String, User> loadUserData() {
         Map<String, User> usersMap = new HashMap<>();
@@ -25,8 +28,7 @@ public class UserDaoImpl implements UserDao {
                 usersMap.put(username, new User(type, username, password, isWho));
             }
         } catch (SQLException e) {
-            // 这里可以考虑抛出自定义异常或者使用日志框架记录异常，便于统一处理
-            e.printStackTrace();
+            logger.severe("用户数据从数据库加载失败：" + e.getMessage());
         }
         return usersMap;
     }
@@ -44,7 +46,7 @@ public class UserDaoImpl implements UserDao {
                 personsMap.put(name, new Person(name, id, gender));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.severe("人员数据从数据库加载失败：" + e.getMessage());
         }
         return personsMap;
     }

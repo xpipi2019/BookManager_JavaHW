@@ -9,22 +9,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c364c61-282f-4c1c-826c-23ff182d9d80" name="更改" comment="LICENSE">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/formdev_flatlaf.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pers/frames/PreLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="2c364c61-282f-4c1c-826c-23ff182d9d80" name="更改" comment="FlatLaf GUI and Del unless files">
+      <change afterPath="$PROJECT_DIR$/src/pers/frames/ConfigManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookManager_JavaHW.iml" beforeDir="false" afterPath="$PROJECT_DIR$/BookManager_JavaHW.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/GUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/dao/UserDaoImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/dao/UserDaoImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/ManageFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/ManageFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/StartFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/StartFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/frames/StudentFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/StudentFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/roles/Student.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/util/Base64Util.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/util/CreateBookDat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/util/ReadBookDat.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,10 +110,20 @@
       <option name="presentableId" value="Default" />
       <updated>1735209099699</updated>
     </task>
+    <task id="LOCAL-00001" summary="FlatLaf GUI and Del unless files">
+      <option name="closed" value="true" />
+      <created>1735270628158</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1735270628158</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="LICENSE" />
-    <option name="LAST_COMMIT_MESSAGE" value="LICENSE" />
+    <MESSAGE value="FlatLaf GUI and Del unless files" />
+    <option name="LAST_COMMIT_MESSAGE" value="FlatLaf GUI and Del unless files" />
   </component>
 </project>

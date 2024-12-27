@@ -18,10 +18,16 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ManageFrame extends JFrame {
-    private Map<String, User> usersMap; // 存储用户数据
-    private Map<String, Person> personsMap; // 存储Person数据
-    private ArrayList<Book> books; // 存储书籍数据
+    private Map<String, User> usersMap;
+    private Map<String, Person> personsMap;
+    private ArrayList<Book> books;
 
+    /**
+     * 构造函数，初始化管理界面
+     * @param usersMap 存储用户数据的Map
+     * @param personsMap 存储Person数据的Map
+     * @param books 存储书籍数据的ArrayList
+     */
     public ManageFrame(Map<String, User> usersMap, Map<String, Person> personsMap, ArrayList<Book> books) {
         this.usersMap = usersMap;
         this.personsMap = personsMap;
@@ -29,7 +35,8 @@ public class ManageFrame extends JFrame {
 
         // 设置窗口信息
         setTitle("图书借阅系统--管理系统");
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        setPreferredSize(new Dimension(400, 300));
 
         // 窗体退出事件
         addWindowListener(new WindowAdapter() {
@@ -61,15 +68,18 @@ public class ManageFrame extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
 
         // 设置窗口属性
-        setSize(400, 300);
+        pack();
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    // 打开修改用户数据的对话框
+    /**
+     * 打开修改用户数据的对话框
+     */
     private void openModifyUserDialog() {
         JDialog dialog = new JDialog(this, "修改用户数据", true);
-        dialog.setLayout(new BorderLayout());
+        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.setPreferredSize(new Dimension(600, 400));
 
         // 用户选择列表
         DefaultListModel<String> userListModel = new DefaultListModel<>();
@@ -79,6 +89,7 @@ public class ManageFrame extends JFrame {
         JList<String> userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userScrollPane = new JScrollPane(userList);
+        userScrollPane.setPreferredSize(new Dimension(200, 300));
 
         // 编辑面板
         JPanel editPanel = new JPanel(new GridLayout(4, 2, 10, 10));
@@ -98,6 +109,7 @@ public class ManageFrame extends JFrame {
 
         // 确定按钮
         JButton saveButton = new JButton("保存修改");
+        saveButton.setPreferredSize(new Dimension(100, 30));
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,12 +189,16 @@ public class ManageFrame extends JFrame {
         dialog.add(userScrollPane, BorderLayout.WEST);
         dialog.add(editPanel, BorderLayout.CENTER);
         dialog.add(saveButton, BorderLayout.SOUTH);
-        dialog.setSize(600, 400);
+        dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-    // 根据用户名从 usersMap 中获取用户对象
+    /**
+     * 根据用户名从 usersMap 中获取用户对象
+     * @param is_who 用户对应的Person名称
+     * @return 用户对象
+     */
     private User getUserByIswho(String is_who) {
         for (User user : usersMap.values()) {
             if (user.getIsWho().equals(is_who)) {
@@ -192,10 +208,13 @@ public class ManageFrame extends JFrame {
         return null;
     }
 
-    // 打开查看用户借阅书籍的对话框
+    /**
+     * 打开查看用户借阅书籍的对话框
+     */
     private void openViewUserBooksDialog() {
         JDialog dialog = new JDialog(this, "查看用户借阅的书籍", true);
-        dialog.setLayout(new BorderLayout());
+        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.setPreferredSize(new Dimension(600, 400));
 
         // 用户选择列表
         DefaultListModel<String> userListModel = new DefaultListModel<>();
@@ -205,11 +224,13 @@ public class ManageFrame extends JFrame {
         JList<String> userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userScrollPane = new JScrollPane(userList);
+        userScrollPane.setPreferredSize(new Dimension(200, 300));
 
         // 显示借阅书籍列表
         JTextArea borrowedBooksArea = new JTextArea();
         borrowedBooksArea.setEditable(false);
         JScrollPane booksScrollPane = new JScrollPane(borrowedBooksArea);
+        booksScrollPane.setPreferredSize(new Dimension(350, 300));
 
         userList.addListSelectionListener(e -> {
             String selectedIswho = userList.getSelectedValue();
@@ -227,7 +248,7 @@ public class ManageFrame extends JFrame {
                                     int bookId = resultSet.getInt("book_id");
                                     String title = resultSet.getString("title");
                                     String bookType = resultSet.getString("book_type");
-                                    borrowedBooksArea.append("书号: " + bookId + " 书名: 《" + title + "》类型: " + bookType + "\n");
+                                    borrowedBooksArea.append("书号: " + bookId + " 书名: 《" + title + "》 类型: " + bookType + "\n");
                                 }
                             }
                         }
@@ -243,15 +264,18 @@ public class ManageFrame extends JFrame {
         // 布局
         dialog.add(userScrollPane, BorderLayout.WEST);
         dialog.add(booksScrollPane, BorderLayout.CENTER);
-        dialog.setSize(600, 400);
+        dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-    // 打开修改书籍信息的对话框
+    /**
+     * 打开修改书籍信息的对话框
+     */
     private void openModifyBookDialog() {
         JDialog dialog = new JDialog(this, "修改书籍信息", true);
-        dialog.setLayout(new BorderLayout());
+        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.setPreferredSize(new Dimension(600, 400));
 
         // 书籍选择列表
         DefaultListModel<Book> bookListModel = new DefaultListModel<>();
@@ -261,6 +285,7 @@ public class ManageFrame extends JFrame {
         JList<Book> bookList = new JList<>(bookListModel);
         bookList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane bookScrollPane = new JScrollPane(bookList);
+        bookScrollPane.setPreferredSize(new Dimension(200, 300));
 
         // 编辑面板
         JPanel editPanel = new JPanel(new GridLayout(3, 2, 10, 10));
@@ -277,6 +302,7 @@ public class ManageFrame extends JFrame {
 
         // 确定按钮
         JButton saveButton = new JButton("保存修改");
+        saveButton.setPreferredSize(new Dimension(100, 30));
         saveButton.addActionListener(e -> {
             Book selectedBook = bookList.getSelectedValue();
             if (selectedBook != null) {
@@ -326,7 +352,7 @@ public class ManageFrame extends JFrame {
         dialog.add(bookScrollPane, BorderLayout.WEST);
         dialog.add(editPanel, BorderLayout.CENTER);
         dialog.add(saveButton, BorderLayout.SOUTH);
-        dialog.setSize(600, 400);
+        dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }

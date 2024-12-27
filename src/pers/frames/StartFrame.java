@@ -1,7 +1,6 @@
 package pers.frames;
 
 import pers.Book;
-import pers.dao.DBUtil;
 import pers.dao.UserDao;
 import pers.dao.UserDaoImpl;
 import pers.roles.Person;
@@ -14,15 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static pers.dao.BookOperate.readBookData;
 
@@ -43,10 +35,6 @@ public class StartFrame extends JFrame {
     private Map<String, Person> personsMap;
     // 记住密码选择框 JCheckBox
     private JCheckBox rememberMeBox;
-    // 定义配置文件名常量 String
-    // 用来保存一些功能设置，在每次打开时加载
-    private final String CONFIG_FILE = "config.ini";
-    private final String PERSONS_FILE = "persons.txt";
     // 定义主题名 String
     private String theme;
 
@@ -54,12 +42,10 @@ public class StartFrame extends JFrame {
     // 初始化登录界面
     public StartFrame() {
         // 加载用户数据 loadUserData() loadPersonData()
-        loadUserData();
-        loadPersonData();
-        // 使用接口加载用户数据
         UserDao userDao = new UserDaoImpl();
         usersMap = userDao.loadUserData();
         personsMap = userDao.loadPersonData();
+
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
@@ -121,62 +107,6 @@ public class StartFrame extends JFrame {
         setVisible(true);
     }
 
-    // 加载用户数据 loadUserData()
-    private void loadUserData() {
-        Logger logger = Logger.getLogger(StartFrame.class.getName());
-        usersMap = new HashMap<>();
-        try (Connection connection = DBUtil.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT type, username, password, is_who FROM users");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                String type = resultSet.getString("type");
-                String username = resultSet.getString("username");
-                String password = resultSet.getString("password");
-                String isWho = resultSet.getString("is_who");
-                usersMap.put(username, new User(type, username, password, isWho));
-            }
-            logger.info("用户数据加载成功");
-        } catch (SQLException e) {
-            logger.severe("用户数据从数据库加载失败：" + e.getMessage());
-            JOptionPane.showMessageDialog(this, "用户数据从数据库加载失败: " + e.getMessage(),
-                    "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void loadPersonData() {
-        personsMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(PERSONS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    String name = parts[0];
-                    int id = Integer.parseInt(parts[1]);
-                    String gender = parts[2];
-                    personsMap.put(name, new Person(name, id, gender));
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "用户数据文件加载失败: " + e.getMessage(),
-                    "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // 保存登录信息到配置文件 -在登录成功后调用-
-    private void saveLoginInfo(String username, String password, String usertype, boolean rememberMe) {
-        // BufferedWriter文件流 写入配置文件内容
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(CONFIG_FILE))) {
-            bw.write("username=" + (rememberMe ? username : "") + "\n");
-            bw.write("password=" + (rememberMe ? password : "") + "\n");
-            bw.write("usertype=" + usertype + "\n");
-            bw.write("rememberMe=" + rememberMe + "\n");
-            bw.write("theme=" + theme + "\n");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "保存登录信息失败: " + e.getMessage(),
-                    "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     // 登录按钮监听器
     private class LoginButtonListener implements ActionListener {
         @Override
@@ -188,43 +118,36 @@ public class StartFrame extends JFrame {
 
             // 登录验证
             if (usersMap.containsKey(username)) {
-                // 用户 user
                 User user = usersMap.get(username);
-                // 用户对应的人 person
                 Person person = personsMap.get(user.getIsWho());
-
-
-                // 获得person对象的所有信息
-                String person_name = person.getName();
-                int person_id = person.getId();
-                String person_gender = person.getGender();
 
                 if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
                     JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
 
                     // 保存登录信息 -在登录成功后调用-
-                    saveLoginInfo(username, password, selectedType , rememberMeStatus);
+                    ConfigManager.saveLoginInfo(username, password, selectedType, rememberMeStatus,theme);
 
                     // 打开对应用户界面 -在登录成功后调用-
-                    if ("教师".equals(selectedType)) {
-                        new TeacherFrame(new Teacher(person_name, person_id, person_gender));
-                    } else if("学生".equals(selectedType)){
-                        new StudentFrame(new Student(person_name, person_id, person_gender));
-                    }else{
-                        ArrayList<Book> booksData = new ArrayList<>();
-                        readBookData(booksData,StartFrame.this);
-                        new ManageFrame(usersMap,personsMap,booksData);
-                    }
-                    /*
-                        该窗口不再需要使用，所以不用setVisible方法隐藏窗口
-                        使用dispose方法关闭窗口，可以释放一部分资源
-                     */
+                    openUserInterface(selectedType, person);
+
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(StartFrame.this, "用户名或密码错误！", "登录失败", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(StartFrame.this, "用户名不存在！", "登录失败", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+        private void openUserInterface(String selectedType, Person person) {
+            if ("教师".equals(selectedType)) {
+                new TeacherFrame(new Teacher(person.getName(), person.getId(), person.getGender()));
+            } else if ("学生".equals(selectedType)) {
+                new StudentFrame(new Student(person.getName(), person.getId(), person.getGender()));
+            } else {
+                ArrayList<Book> booksData = new ArrayList<>();
+                readBookData(booksData, StartFrame.this);
+                new ManageFrame(usersMap, personsMap, booksData);
             }
         }
     }
