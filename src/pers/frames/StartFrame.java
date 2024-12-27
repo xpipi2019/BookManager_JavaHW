@@ -18,7 +18,9 @@ import java.util.Map;
 
 import static pers.dao.BookOperate.readBookData;
 
-// 登录界面 StartFrame
+/**
+ * 登录界面 StartFrame
+ */
 public class StartFrame extends JFrame {
     // 用户类型 JComboBox
     private final JComboBox<String> userTypeComboBox;
@@ -35,14 +37,14 @@ public class StartFrame extends JFrame {
     // 定义主题名 String
     private String theme;
 
-
-    // 初始化登录界面
+    /**
+     * 初始化登录界面
+     */
     public StartFrame() {
         // 加载用户数据 loadUserData() loadPersonData()
         UserDao userDao = new UserDaoImpl();
         usersMap = userDao.loadUserData();
         personsMap = userDao.loadPersonData();
-
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
@@ -62,7 +64,7 @@ public class StartFrame extends JFrame {
         // 第一行：用户类型 userTypePanel
         JPanel userTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel userTypeLabel = new JLabel("用户类型:");
-        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生","管理"});
+        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生", "管理"});
         userTypePanel.add(userTypeLabel);
         userTypePanel.add(userTypeComboBox);
 
@@ -104,7 +106,9 @@ public class StartFrame extends JFrame {
         setVisible(true);
     }
 
-    // 登录按钮监听器
+    /**
+     * 登录按钮监听器
+     */
     private class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -122,7 +126,7 @@ public class StartFrame extends JFrame {
                     JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
 
                     // 保存登录信息 -在登录成功后调用-
-                    ConfigManager.saveLoginInfo(username, password, selectedType, rememberMeStatus,theme);
+                    ConfigManager.saveLoginInfo(username, password, selectedType, rememberMeStatus, theme);
 
                     // 打开对应用户界面 -在登录成功后调用-
                     openUserInterface(selectedType, person);
@@ -136,6 +140,12 @@ public class StartFrame extends JFrame {
             }
         }
 
+        /**
+         * 打开对应用户界面
+         *
+         * @param selectedType 用户类型
+         * @param person       用户信息
+         */
         private void openUserInterface(String selectedType, Person person) {
             if ("教师".equals(selectedType)) {
                 new TeacherFrame(new Teacher(person.getName(), person.getId(), person.getGender()));
@@ -148,5 +158,4 @@ public class StartFrame extends JFrame {
             }
         }
     }
-
 }

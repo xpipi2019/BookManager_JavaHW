@@ -28,7 +28,7 @@ public class Person {
      * @param id     证件号
      * @param gender 性别
      */
-    Person(String name, int id, String gender) {
+    public Person(String name, int id, String gender) {
         this.name = name;
         this.id = id;
         this.gender = gender;

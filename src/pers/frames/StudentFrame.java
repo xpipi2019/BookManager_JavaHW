@@ -15,7 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-// 学生使用界面
+/**
+ * 学生使用界面 StudentFrame
+ */
 public class StudentFrame extends JFrame {
     // 学生数据
     private Student student;
@@ -28,7 +30,11 @@ public class StudentFrame extends JFrame {
     // 图书信息文本域
     private JTextArea bookInfoArea;
 
-    // 窗体初始化
+    /**
+     * 窗体初始化
+     *
+     * @param student 学生对象
+     */
     public StudentFrame(Student student) {
         this.student = student;
 
@@ -107,7 +113,11 @@ public class StudentFrame extends JFrame {
         refreshBooks(bookListModel);
     }
 
-    // 刷新书籍列表
+    /**
+     * 刷新书籍列表
+     *
+     * @param bookListModel 书籍列表模型
+     */
     private void refreshBooks(DefaultListModel<Book> bookListModel) {
         bookListModel.clear();
         booksData.clear();
@@ -134,7 +144,11 @@ public class StudentFrame extends JFrame {
         setStudentBorrowCount(student);
     }
 
-    // 设置学生借书数量
+    /**
+     * 设置学生借书数量
+     *
+     * @param student 学生对象
+     */
     public void setStudentBorrowCount(Student student) {
         int count = 0;
         for (Book book : booksData) {
@@ -145,7 +159,9 @@ public class StudentFrame extends JFrame {
         student.setBorrowedBooksCount(count);
     }
 
-    // 更新选中书籍的信息
+    /**
+     * 更新选中书籍的信息
+     */
     private void updateBookInfo() {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook != null) {
@@ -168,7 +184,11 @@ public class StudentFrame extends JFrame {
         }
     }
 
-    // 借阅书籍
+    /**
+     * 借阅书籍
+     *
+     * @param bookListModel 书籍列表模型
+     */
     private void borrowBook(DefaultListModel<Book> bookListModel) {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook == null) {
@@ -188,7 +208,11 @@ public class StudentFrame extends JFrame {
         }
     }
 
-    // 归还书籍
+    /**
+     * 归还书籍
+     *
+     * @param bookListModel 书籍列表模型
+     */
     private void returnBook(DefaultListModel<Book> bookListModel) {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook == null) {

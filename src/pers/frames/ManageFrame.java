@@ -17,6 +17,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * 管理者使用界面 ManageFrame
+ */
 public class ManageFrame extends JFrame {
     private Map<String, User> usersMap;
     private Map<String, Person> personsMap;
