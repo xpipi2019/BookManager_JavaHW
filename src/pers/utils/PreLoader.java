@@ -1,10 +1,11 @@
-package pers.frames;
+package pers.utils;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 
 public class PreLoader {
@@ -88,6 +89,8 @@ public class PreLoader {
             FlatLightLaf.setup();
         }
 
+        CustomizingTheme();
+
         try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -109,4 +112,30 @@ public class PreLoader {
             System.out.println("配置文件加载失败: " + e.getMessage());
         }
     }
+
+    private static void CustomizingTheme() {
+    // 设置按钮的圆角半径为 999，使其接近圆形
+    UIManager.put("Button.arc", 999);
+    // 设置组件的圆角半径为 999，使其接近圆形
+    UIManager.put("Component.arc", 999);
+    // 设置进度条的圆角半径为 999，使其接近圆形
+    UIManager.put("ProgressBar.arc", 999);
+    // 设置文本组件的圆角半径为 999，使其接近圆形
+    UIManager.put("TextComponent.arc", 999);
+
+    // 设置组件的箭头类型为三角形
+    UIManager.put("Component.arrowType", "triangle");
+
+    // 设置滚动条轨道的圆角半径为 999，使其接近圆形
+    UIManager.put("ScrollBar.trackArc", 999);
+    // 设置滚动条滑块的圆角半径为 999，使其接近圆形
+    UIManager.put("ScrollBar.thumbArc", 999);
+    // 设置滚动条轨道的内边距
+    UIManager.put("ScrollBar.trackInsets", new Insets(2, 4, 2, 4));
+    // 设置滚动条滑块的内边距
+    UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
+    // 设置滚动条轨道的颜色
+    UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
+}
+
 }

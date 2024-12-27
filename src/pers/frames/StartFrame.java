@@ -1,11 +1,16 @@
 package pers.frames;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import pers.Book;
 import pers.dao.UserDao;
 import pers.dao.UserDaoImpl;
 import pers.roles.Person;
 import pers.roles.Student;
 import pers.roles.Teacher;
+import pers.utils.ConfigManager;
+import pers.utils.PreLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +21,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.formdev.flatlaf.FlatLaf.updateUI;
 import static pers.dao.BookOperate.readBookData;
 
 /**
@@ -48,51 +54,60 @@ public class StartFrame extends JFrame {
 
         // 设置窗口信息，布局、标题、大小
         setDefaultLookAndFeelDecorated(true);
-        setSize(250, 200);
-        setTitle("欢迎使用");
-        setLayout(new GridLayout(4, 2, 5, 5));
+        setSize(350, 225);
+        setTitle("图书借阅系统");
+        // 添加 JLabel 欢迎语
+        JLabel titleLabel = new JLabel("-Welcome-", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(titleLabel, 0);
+        setLayout(new GridLayout(5, 2, 5, 5));
 
         // 窗体退出事件 登陆前退出：异常退出，返回-1
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(-1);
+                int confirm = JOptionPane.showConfirmDialog(StartFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    System.exit(-1);
+                } else{
+                    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
             }
         });
 
         // 组件创建以及布局
-        // 第一行：用户类型 userTypePanel
-        JPanel userTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel userTypeLabel = new JLabel("用户类型:");
-        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生", "管理"});
-        userTypePanel.add(userTypeLabel);
-        userTypePanel.add(userTypeComboBox);
-
-        // 第二行：用户名输入 userPanel
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // 第一行：用户名输入 userPanel
+        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel userLabel = new JLabel("账号：");
         usernameField = new JTextField(15);
         userPanel.add(userLabel);
         userPanel.add(usernameField);
 
-        // 第三行：密码输入 passPanel
-        JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // 第二行：密码输入 passPanel
+        JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel passLabel = new JLabel("密码：");
         passwordField = new JPasswordField(15);
         passPanel.add(passLabel);
         passPanel.add(passwordField);
 
-        // 第四行：操作按钮 actionPanel
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // 第三行：用户类型 userTypePanel
+        JPanel userTypePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel userTypeLabel = new JLabel("用户类型:");
+        userTypeComboBox = new JComboBox<>(new String[]{"教师", "学生", "管理"});
         rememberMeBox = new JCheckBox("记住密码", true);
-        JButton loginButton = new JButton("确定");
-        actionPanel.add(rememberMeBox);
+        userTypePanel.add(userTypeLabel);
+        userTypePanel.add(userTypeComboBox);
+        userTypePanel.add(rememberMeBox);
+
+        // 第四行：操作按钮 actionPanel
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton loginButton = new JButton("登录");
         actionPanel.add(loginButton);
 
         // 将四个部分组件添加到窗体中
-        add(userTypePanel);
         add(userPanel);
         add(passPanel);
+        add(userTypePanel);
         add(actionPanel);
 
         // 如果保存了登录信息在配置文件中，则预填充用户名和密码信息
@@ -100,6 +115,86 @@ public class StartFrame extends JFrame {
 
         // 按钮点击事件
         loginButton.addActionListener(new LoginButtonListener());
+
+        // 创建菜单栏
+        JMenuBar menuBar = new JMenuBar();
+
+        // 创建设置菜单
+        JMenu settingsMenu = new JMenu("设置");
+
+        // 创建主题选择子菜单
+        JMenu themeMenu = new JMenu("主题");
+
+        // 创建主题选项
+        JMenuItem darculaThemeItem = new JMenuItem("Darcula");
+        JMenuItem lightThemeItem = new JMenuItem("Light");
+        JMenuItem darkThemeItem = new JMenuItem("Dark");
+
+        darculaThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatDarculaLaf.setup();
+                System.out.println("Darcula主题已启用");
+                updateUI();
+                theme = "Darcula";
+            }
+        });
+
+        lightThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatLightLaf.setup();
+                System.out.println("Light主题已启用");
+                updateUI();
+                theme = "Light";
+            }
+        });
+
+        darkThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatDarkLaf.setup();
+                System.out.println("Dark主题已启用");
+                updateUI();
+                theme = "Dark";
+            }
+        });
+
+        // 将主题选项添加到主题菜单
+        themeMenu.add(darculaThemeItem);
+        themeMenu.add(lightThemeItem);
+        themeMenu.add(darkThemeItem);
+
+        // 将主题菜单添加到设置菜单
+        settingsMenu.add(themeMenu);
+
+        // 创建关于菜单
+        JMenu aboutMenu = new JMenu("关于");
+
+        // 创建关于系统菜单项
+        JMenuItem aboutItem = new JMenuItem("关于系统");
+
+        // 添加关于系统事件监听器
+        aboutItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 处理关于系统的逻辑
+                String aboutMessage = "Version: 1.0\n"
+                        + "Author: xpipi,muelovo\n"
+                        + "Time: 2024/12/27\n";
+                JOptionPane.showMessageDialog(StartFrame.this, aboutMessage, "关于", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // 将对于系统菜单项添加到关于菜单
+        aboutMenu.add(aboutItem);
+
+        // 将设置菜单和对于菜单添加到菜单栏
+        menuBar.add(settingsMenu);
+        menuBar.add(aboutMenu);
+
+        // 设置菜单栏到窗口
+        setJMenuBar(menuBar);
 
         // 窗口居中
         setLocationRelativeTo(null);

@@ -41,11 +41,14 @@ public class ManageFrame extends JFrame {
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(400, 300));
 
-        // 窗体退出事件
+        // 窗体退出事件 登陆后退出：正常退出，返回0
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                int confirm = JOptionPane.showConfirmDialog(ManageFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
             }
         });
 

@@ -1,9 +1,7 @@
-package pers.frames;
+package pers.utils;
 
 import javax.swing.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class ConfigManager {
     // 定义配置文件名常量
@@ -33,6 +31,38 @@ public class ConfigManager {
             // 显示错误信息对话框
             JOptionPane.showMessageDialog(null, "保存登录信息失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void saveTheme(String theme) {
+        File configFile = new File(CONFIG_FILE);
+
+        String themeTosave = theme;
+        try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
+            String line;
+            String username = "";
+            String password = "";
+            String usertype = "";
+
+            boolean rememberMeStatus = false;
+
+            // BufferedReader文件流 读取配置文件内容
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("username=")) {
+                    username = line.substring(line.indexOf('=') + 1).trim();
+                } else if (line.startsWith("password=")) {
+                    password = line.substring(line.indexOf('=') + 1).trim();
+                } else if (line.startsWith("usertype=")) {
+                    usertype = line.substring(line.indexOf('=') + 1).trim();
+                } else if (line.startsWith("rememberMe=")) {
+                    rememberMeStatus = Boolean.parseBoolean(line.substring(line.indexOf('=') + 1).trim());
+                }
+
+                saveLoginInfo(username, password, usertype, rememberMeStatus, themeTosave);
+            }
+
+        } catch (IOException e) {
+            System.out.println("配置文件加载失败: " + e.getMessage());
         }
     }
 }

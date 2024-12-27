@@ -1,5 +1,8 @@
 package pers.frames;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import pers.Book;
 import pers.dao.DBUtil;
 import pers.roles.Student;
@@ -7,6 +10,8 @@ import pers.dao.BookOperate;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -14,6 +19,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import static com.formdev.flatlaf.FlatLaf.updateUI;
+import static pers.utils.ConfigManager.saveTheme;
 
 /**
  * 学生使用界面 StudentFrame
@@ -46,7 +54,12 @@ public class StudentFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                int confirm = JOptionPane.showConfirmDialog(StudentFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                } else{
+                    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
             }
         });
 
@@ -91,6 +104,86 @@ public class StudentFrame extends JFrame {
         bottomPanel.add(borrowButton);
         bottomPanel.add(returnButton);
         bottomPanel.add(exitButton);
+
+        // 创建菜单栏
+        JMenuBar menuBar = new JMenuBar();
+
+        // 创建设置菜单
+        JMenu settingsMenu = new JMenu("设置");
+
+        // 创建主题选择子菜单
+        JMenu themeMenu = new JMenu("主题");
+
+        // 创建主题选项
+        JMenuItem darculaThemeItem = new JMenuItem("Darcula");
+        JMenuItem lightThemeItem = new JMenuItem("Light");
+        JMenuItem darkThemeItem = new JMenuItem("Dark");
+
+        darculaThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatDarculaLaf.setup();
+                System.out.println("Darcula主题已启用");
+                updateUI();
+                saveTheme("Darcula");
+            }
+        });
+
+        lightThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatLightLaf.setup();
+                System.out.println("Light主题已启用");
+                updateUI();
+                saveTheme("Light");
+            }
+        });
+
+        darkThemeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FlatDarkLaf.setup();
+                System.out.println("Dark主题已启用");
+                updateUI();
+                saveTheme("Dark");
+            }
+        });
+
+        // 将主题选项添加到主题菜单
+        themeMenu.add(darculaThemeItem);
+        themeMenu.add(lightThemeItem);
+        themeMenu.add(darkThemeItem);
+
+        // 将主题菜单添加到设置菜单
+        settingsMenu.add(themeMenu);
+
+        // 创建关于菜单
+        JMenu aboutMenu = new JMenu("关于");
+
+        // 创建关于系统菜单项
+        JMenuItem aboutItem = new JMenuItem("关于系统");
+
+        // 添加关于系统事件监听器
+        aboutItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 处理关于系统的逻辑
+                String aboutMessage = "Version: 1.0\n"
+                        + "Author: xpipi,muelovo\n"
+                        + "Time: 2024/12/27\n";
+                JOptionPane.showMessageDialog(StudentFrame.this, aboutMessage, "关于", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // 将对于系统菜单项添加到关于菜单
+        aboutMenu.add(aboutItem);
+
+        // 将设置菜单和对于菜单添加到菜单栏
+        menuBar.add(settingsMenu);
+        menuBar.add(aboutMenu);
+
+        // 设置菜单栏到窗口
+        setJMenuBar(menuBar);
 
         // 添加组件到窗口
         setLayout(new BorderLayout(10, 10));

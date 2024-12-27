@@ -4,7 +4,7 @@ import pers.frames.StartFrame;
 
 import javax.swing.*;
 
-import static pers.frames.PreLoader.loadTheme;
+import static pers.utils.PreLoader.loadTheme;
 
 // 主GUI类
 public class GUI {
