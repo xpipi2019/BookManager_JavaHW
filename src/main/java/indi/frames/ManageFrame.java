@@ -18,6 +18,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
+import static main.java.indi.utils.LoginUtil.generateSalt;
+import static main.java.indi.utils.LoginUtil.hashPassword;
+
 
 /**
  * 管理者使用界面 ManageFrame
@@ -107,7 +113,7 @@ public class ManageFrame extends JFrame {
         // 编辑面板
         JPanel editPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         JTextField usernameField = new JTextField();
-        JTextField passwordField = new JTextField();
+        JPasswordField passwordField = new JPasswordField(); // 使用 JPasswordField
         JTextField typeField = new JTextField();
         JTextField isWhoField = new JTextField();
 
@@ -130,24 +136,30 @@ public class ManageFrame extends JFrame {
                 if (selectedUsername != null) {
                     User selectedUser = getUserByIswho(selectedUsername);
                     String newUsername = usernameField.getText();
-                    String newPassword = passwordField.getText();
+                    char[] newPasswordChars = passwordField.getPassword(); // 获取密码字符数组
                     String newType = typeField.getText();
                     String newIsWho = isWhoField.getText();
+
                     try (Connection connection = DBUtil.getConnection()) {
+                        String salt = generateSalt();
+                        String hashedPassword = hashPassword(new String(newPasswordChars), salt); // 加密密码
+                        Arrays.fill(newPasswordChars, '0');//清空密码数组，防止密码泄露
+                        // 更新用户数据的SQL语句，存储加密后的密码
                         // 更新用户数据的SQL语句
-                        String updateUserQuery = "UPDATE users SET username =?, password =?, type =?, is_who =? WHERE username =?";
+                        String updateUserQuery = "UPDATE users SET username =?, password =?, type =?, is_who =?, salt =? WHERE username =?";
                         try (PreparedStatement userPreparedStatement = connection.prepareStatement(updateUserQuery)) {
                             userPreparedStatement.setString(1, newUsername);
-                            userPreparedStatement.setString(2, newPassword);
+                            userPreparedStatement.setString(2, hashedPassword);
                             userPreparedStatement.setString(3, newType);
                             userPreparedStatement.setString(4, newIsWho);
-                            userPreparedStatement.setString(5, selectedUser.getUsername());
+                            userPreparedStatement.setString(5, salt);
+                            userPreparedStatement.setString(6, selectedUser.getUsername());
                             int userRowsAffected = userPreparedStatement.executeUpdate();
 
                             if (userRowsAffected > 0) {
                                 // 更新成功后，同步更新本地缓存的 usersMap 数据
                                 selectedUser.setUsername(newUsername);
-                                selectedUser.setPassword(newPassword);
+                                selectedUser.setPassword(hashedPassword);
                                 selectedUser.setType(newType);
                                 selectedUser.setIsWho(newIsWho);
 
@@ -180,6 +192,8 @@ public class ManageFrame extends JFrame {
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(dialog, "修改用户数据出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                         logger.error("Database error occurred while updating user data for user: {}", newUsername, ex);
+                    } catch (NoSuchAlgorithmException ex) {
+                        throw new RuntimeException(ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(dialog, "请选择一个用户！");
@@ -196,7 +210,7 @@ public class ManageFrame extends JFrame {
                     User selectedUser = getUserByIswho(selectedIswho);
                     if (selectedUser != null) {
                         usernameField.setText(selectedUser.getUsername());
-                        passwordField.setText(selectedUser.getPassword());
+                        //passwordField.setText(selectedUser.getPassword()); // 不显示密码
                         typeField.setText(selectedUser.getType());
                         isWhoField.setText(selectedUser.getIsWho());
                     }
@@ -212,6 +226,7 @@ public class ManageFrame extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
 
     /**
      * 根据用户名从 usersMap 中获取用户对象

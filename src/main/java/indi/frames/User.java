@@ -16,6 +16,7 @@ public class User {
     // 对应的用户标识
     private String isWho;
 
+
     /**
      * 构造函数
      *
@@ -110,6 +111,7 @@ public class User {
         logger.debug("Set password");
     }
 
+
     // 获取用户标识
     /**
      * 获取用户标识
@@ -135,4 +137,5 @@ public class User {
         this.isWho = isWho;
         logger.debug("Set isWho to: {}", isWho);
     }
+
 }

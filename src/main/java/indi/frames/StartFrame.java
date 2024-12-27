@@ -26,6 +26,7 @@ import java.util.Map;
 import static com.formdev.flatlaf.FlatLaf.updateUI;
 import static main.java.indi.constant.Constants.aboutMessage;
 import static main.java.indi.dao.BookOperate.readBookData;
+import static main.java.indi.utils.LoginUtil.verifyPassword;
 
 /**
  * 登录界面 StartFrame
@@ -219,8 +220,7 @@ public class StartFrame extends JFrame {
             if (usersMap.containsKey(username)) {
                 User user = usersMap.get(username);
                 Person person = personsMap.get(user.getIsWho());
-
-                if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
+                if (verifyPassword(username, password) && user.getType().equals(selectedType)) {
                     JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
                     logger.info("Login successful for user: {}", username);
 
