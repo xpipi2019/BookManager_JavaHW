@@ -1,4 +1,0 @@
-管理,admin,admin123,管理员
-教师,teacher1,123456,潮曦
-学生,student1,abcdef,李华
-学生,student2,abcdef,王明

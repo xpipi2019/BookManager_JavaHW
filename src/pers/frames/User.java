@@ -1,53 +1,120 @@
 package pers.frames;
 
-/**
- * @author XPIPI
- */
+// 用户类
 public class User {
-    // 用户类型 type
+    // 用户类型
     private String type;
-    // 用户名 username
+    // 用户名
     private String username;
-    // 密码 password
+    // 密码
     private String password;
-    // 对应了谁 isWho
+    // 对应的用户标识
     private String isWho;
 
+    /**
+     * 构造函数
+     *
+     * @param type     用户类型
+     * @param username 用户名
+     * @param password 密码
+     * @param isWho    用户标识
+     */
     public User(String type, String username, String password, String isWho) {
-        this.type = type;
-        this.username = username;
-        this.password = password;
-        this.isWho = isWho;
+        this.setType(type);
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setIsWho(isWho);
     }
 
-    String getType() {
+    // 获取用户类型
+    /**
+     * 获取用户类型
+     *
+     * @return 用户类型
+     */
+    public String getType() {
         return type;
     }
 
-    void setType(String type) {
+    // 设置用户类型
+    /**
+     * 设置用户类型
+     *
+     * @param type 用户类型
+     */
+    public void setType(String type) {
+        if (type == null || type.isEmpty()) {
+            throw new IllegalArgumentException("类型不能为空");
+        }
         this.type = type;
     }
 
-    String getUsername() {
+    // 获取用户名
+    /**
+     * 获取用户名
+     *
+     * @return 用户名
+     */
+    public String getUsername() {
         return username;
     }
 
-    void setUsername(String username) {
+    // 设置用户名
+    /**
+     * 设置用户名
+     *
+     * @param username 用户名
+     */
+    public void setUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("用户名不能为空");
+        }
         this.username = username;
     }
 
-    String getPassword() {
+    // 获取密码
+    /**
+     * 获取密码
+     *
+     * @return 密码
+     */
+    public String getPassword() {
         return password;
     }
 
-    void setPassword(String password) {
+    // 设置密码
+    /**
+     * 设置密码
+     *
+     * @param password 密码
+     */
+    public void setPassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("密码不能为空");
+        }
         this.password = password;
     }
 
-    String getIsWho() {
+    // 获取用户标识
+    /**
+     * 获取用户标识
+     *
+     * @return 用户标识
+     */
+    public String getIsWho() {
         return isWho;
     }
 
-    void setIsWho(String isWho) { this.isWho = isWho; }
-
+    // 设置用户标识
+    /**
+     * 设置用户标识
+     *
+     * @param isWho 用户标识
+     */
+    public void setIsWho(String isWho) {
+        if (isWho == null || isWho.isEmpty()) {
+            throw new IllegalArgumentException("用户标识不能为空");
+        }
+        this.isWho = isWho;
+    }
 }

@@ -14,6 +14,10 @@ import java.util.logging.Logger;
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = Logger.getLogger(UserDaoImpl.class.getName());
 
+    /**
+     * 从数据库加载用户数据
+     * @return 存储用户数据的 Map，键为用户名，值为 User 对象
+     */
     @Override
     public Map<String, User> loadUserData() {
         Map<String, User> usersMap = new HashMap<>();
@@ -33,6 +37,10 @@ public class UserDaoImpl implements UserDao {
         return usersMap;
     }
 
+    /**
+     * 从数据库加载人员数据
+     * @return 存储人员数据的 Map，键为人员名称，值为 Person 对象
+     */
     @Override
     public Map<String, Person> loadPersonData() {
         Map<String, Person> personsMap = new HashMap<>();

@@ -15,20 +15,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * @author XPIPI
- */
-// 界面三：老师使用界面 TeacherFrame
+// 教师使用界面
 public class TeacherFrame extends JFrame {
-    // 学生数据 teacher
+    // 教师数据
     private Teacher teacher;
-    // JList对象 bookList
+    // JList对象
     private JList<Book> bookList;
-    // 用一个数组来临时存储读取文件中的图书数据 booksData
+    // 临时存储读取文件中的图书数据
     ArrayList<Book> booksData = new ArrayList<>();
-    // 最大可借书数量 MAX_BORROW_LIMIT
+    // 最大可借书数量
     private final int MAX_BORROW_LIMIT = 5;
-    // 图书信息文本域 bookInfoArea
+    // 图书信息文本域
     private JTextArea bookInfoArea;
 
     // 窗体初始化
@@ -47,10 +44,10 @@ public class TeacherFrame extends JFrame {
             }
         });
 
-        // 顶部显示学生信息 topPanel
+        // 顶部显示教师信息
         JPanel topPanel = new JPanel(new BorderLayout());
 
-        // 学生信息标签 teacherInfoLabel
+        // 教师信息标签
         JLabel teacherInfoLabel = new JLabel(
                 "姓名: " + teacher.getName() + " | 工号: " + teacher.getId() + " | 性别: " + teacher.getGender(),
                 JLabel.CENTER);
@@ -58,63 +55,41 @@ public class TeacherFrame extends JFrame {
         // topPanel -> teacherInfoLabel 居中
         topPanel.add(teacherInfoLabel, BorderLayout.CENTER);
 
-
-        // 中间书籍选择和详细信息 middlePanel
+        // 中间书籍选择和详细信息
         JPanel middlePanel = new JPanel(new GridLayout(1, 2, 10, 10));
 
-        // 创建管理列表数据模型 bookListModel
+        // 创建管理列表数据模型
         DefaultListModel<Book> bookListModel = new DefaultListModel<>();
 
-        // 左侧：带滚动条的书籍列表 bookScrollPane
-        // 构造一个JList从指定显示元素从非空的model bookList
+        // 左侧：带滚动条的书籍列表
         bookList = new JList<>(bookListModel);
-        // 设置Jlist选择模式：单选
         bookList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        // 设置Jlist事件监听器：选中时触发
         bookList.addListSelectionListener(e -> updateBookInfo());
-        // 创建JScrollPane滚动条，bookList是组件对象 bookScrollPane
         JScrollPane bookScrollPane = new JScrollPane(bookList);
-        // topPanel -> bookScrollPane
         middlePanel.add(bookScrollPane);
 
         // 右侧：选中书籍的详细信息（不可编辑）
-        // 创建一个用于显示图书信息的文本域 bookInfoArea
         bookInfoArea = new JTextArea();
-        // 设置JTextArea编辑模式：不可编辑
         bookInfoArea.setEditable(false);
-        // 创建JScrollPane滚动条，bookInfoArea是组件对象 infoScrollPane
         JScrollPane infoScrollPane = new JScrollPane(bookInfoArea);
-        // topPanel -> infoScrollPane
         middlePanel.add(infoScrollPane);
 
-
-        // 底部按钮 bottomPanel
+        // 底部按钮
         JPanel bottomPanel = new JPanel(new GridLayout(1, 4, 10, 10));
-        // 刷新书籍按钮 refreshButton
         JButton refreshButton = new JButton("刷新书籍");
-        // 借阅书籍按钮 borrowButton
         JButton borrowButton = new JButton("借阅书籍");
-        // 归还书籍按钮 returnButton
         JButton returnButton = new JButton("归还书籍");
-        // 退出程序按钮 exitButton
         JButton exitButton = new JButton("退出程序");
 
-        // bottomPanel -> refreshButton
         bottomPanel.add(refreshButton);
-        // bottomPanel -> borrowButton
         bottomPanel.add(borrowButton);
-        // bottomPanel -> returnButton
         bottomPanel.add(returnButton);
-        // bottomPanel -> exitButton
         bottomPanel.add(exitButton);
 
         // 添加组件到窗口
         setLayout(new BorderLayout(10, 10));
-        // StudentFrame -> topPanel 布局位置:NORTH
         add(topPanel, BorderLayout.NORTH);
-        // StudentFrame -> middlePanel 布局位置:CENTER
         add(middlePanel, BorderLayout.CENTER);
-        // StudentFrame -> bottomPanel 布局位置:SOUTH
         add(bottomPanel, BorderLayout.SOUTH);
 
         // 按钮功能实现
@@ -132,12 +107,13 @@ public class TeacherFrame extends JFrame {
         refreshBooks(bookListModel);
     }
 
+    // 刷新书籍列表
     private void refreshBooks(DefaultListModel<Book> bookListModel) {
-        //列表数据置空
+        // 清空列表数据
         bookListModel.clear();
         booksData.clear();
 
-        //读取数据操作
+        // 读取数据操作
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT book_id, title, author, book_type, borrowed_by_id, is_borrowed FROM books");
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -161,21 +137,21 @@ public class TeacherFrame extends JFrame {
         setTeacherBorrowCount(teacher);
     }
 
+    // 设置教师借书数量
     public void setTeacherBorrowCount(Teacher teacher) {
-        int Count = 0;
-        for(Book book : booksData) {
-            if(book.getBorrowedById() == teacher.getId()) {
-                Count++;
+        int count = 0;
+        for (Book book : booksData) {
+            if (book.getBorrowedById() == teacher.getId()) {
+                count++;
             }
         }
-        teacher.setBorrowedBooksCount(Count);
+        teacher.setBorrowedBooksCount(count);
     }
 
+    // 更新选中书籍的信息
     private void updateBookInfo() {
-        // 用选中的图书来创建对象 selectedBook
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook != null) {
-            // 通过借阅人ID号来找到借阅人姓名
             String whoBorrowedName;
             if (selectedBook.getBorrowedById() == 0) {
                 whoBorrowedName = "未借出";
@@ -189,26 +165,23 @@ public class TeacherFrame extends JFrame {
                             "类别: " + selectedBook.getBookType() + "\n" +
                             "状态: " + (selectedBook.isBorrowed() ? "已借出" : "未借出") + "\n" +
                             "借阅人：" + whoBorrowedName
-
             );
-        } else { // 未选中时置空
+        } else {
             bookInfoArea.setText("");
         }
     }
 
+    // 借阅书籍
     private void borrowBook(DefaultListModel<Book> bookListModel) {
         Book selectedBook = bookList.getSelectedValue();
-        // 用选中的图书来创建对象 selectedBook
-        // 未选中时弹出提示
         if (selectedBook == null) {
             JOptionPane.showMessageDialog(this, "请选择一本书！", "提示", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // 判断选中的书是否可借出
         if (selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书已经被借出！", "提示", JOptionPane.WARNING_MESSAGE);
-        } else if(teacher.getBorrowedBooksCount() >= MAX_BORROW_LIMIT){
+        } else if (teacher.getBorrowedBooksCount() >= MAX_BORROW_LIMIT) {
             JOptionPane.showMessageDialog(this, "您最多同时借五本书！", "提示", JOptionPane.WARNING_MESSAGE);
         } else {
             BookOperate.changeBookBorrowedStatus(booksData, selectedBook, teacher.getId(), TeacherFrame.this);
@@ -218,6 +191,7 @@ public class TeacherFrame extends JFrame {
         }
     }
 
+    // 归还书籍
     private void returnBook(DefaultListModel<Book> bookListModel) {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook == null) {
@@ -227,8 +201,8 @@ public class TeacherFrame extends JFrame {
 
         if (!selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书没有被借出！", "提示", JOptionPane.WARNING_MESSAGE);
-        } else if(selectedBook.getBorrowedById() == teacher.getId()) {
-            BookOperate.changeBookBorrowedStatus(booksData,selectedBook, teacher.getId(), TeacherFrame.this);
+        } else if (selectedBook.getBorrowedById() == teacher.getId()) {
+            BookOperate.changeBookBorrowedStatus(booksData, selectedBook, teacher.getId(), TeacherFrame.this);
             JOptionPane.showMessageDialog(this, "成功归还书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
             updateBookInfo();

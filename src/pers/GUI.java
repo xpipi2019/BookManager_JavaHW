@@ -6,11 +6,10 @@ import javax.swing.*;
 
 import static pers.frames.PreLoader.loadTheme;
 
-/**
- * @author XPIPI
- */
+// 主GUI类
 public class GUI {
     public GUI(){
+        // 加载主题
         loadTheme();
         /*
             SwingUtilities.invokeLater()方法

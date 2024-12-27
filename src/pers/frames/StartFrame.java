@@ -18,10 +18,7 @@ import java.util.Map;
 
 import static pers.dao.BookOperate.readBookData;
 
-/**
- * @author XPIPI
- */
-// 界面一：登录界面 StartFrame
+// 登录界面 StartFrame
 public class StartFrame extends JFrame {
     // 用户类型 JComboBox
     private final JComboBox<String> userTypeComboBox;

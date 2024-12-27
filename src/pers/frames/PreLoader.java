@@ -7,17 +7,23 @@ import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.io.*;
 
-/**
- * @author XPIPI
- */
 public class PreLoader {
     // 定义配置文件名常量 String
     // 用来保存一些功能设置，在每次打开时加载
     private static final String CONFIG_FILE = "config.ini";
 
+    /**
+     * 加载配置文件中的设置，并填充到相应的组件中
+     * @param usernameField 用户名输入框
+     * @param passwordField 密码输入框
+     * @param userTypeComboBox 用户类型选择框
+     * @param rememberMeBox 记住密码复选框
+     * @return 加载的主题名称
+     */
     public static String loadConfig(JTextField usernameField, JPasswordField passwordField, JComboBox<String> userTypeComboBox, JCheckBox rememberMeBox) {
         String theme = "";
         File configFile = new File(CONFIG_FILE);
+
         // 初次启动，无配置文件
         if (!configFile.exists()) {
             return "Light";
@@ -41,16 +47,17 @@ public class PreLoader {
                     usertype = line.substring(line.indexOf('=') + 1).trim();
                 } else if (line.startsWith("rememberMe=")) {
                     rememberMeStatus = Boolean.parseBoolean(line.substring(line.indexOf('=') + 1).trim());
-                } else if (line.startsWith("theme=")){
-                    if (line.substring(line.indexOf('=') + 1).trim().equals("Dark")){
+                } else if (line.startsWith("theme=")) {
+                    String themeValue = line.substring(line.indexOf('=') + 1).trim();
+                    if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
                         theme = "Dark";
                         System.out.println("配置主题为Dark");
-                    } else if(line.substring(line.indexOf('=') + 1).trim().equals("Light")){
+                    } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
                         theme = "Light";
                         System.out.println("配置主题为Light");
-                    } else{
+                    } else {
                         FlatDarculaLaf.setup();
                         theme = "Darcula";
                         System.out.println("配置主题为Darcula");
@@ -70,19 +77,29 @@ public class PreLoader {
         return theme;
     }
 
-    public static void loadTheme(){
+    /**
+     * 仅加载配置文件中的主题设置
+     */
+    public static void loadTheme() {
         File configFile = new File(CONFIG_FILE);
+
+        // 初次启动，无配置文件
+        if (!configFile.exists()) {
+            FlatLightLaf.setup();
+        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("theme=")){
-                    if (line.substring(line.indexOf('=') + 1).trim().equals("Dark")){
+                if (line.startsWith("theme=")) {
+                    String themeValue = line.substring(line.indexOf('=') + 1).trim();
+                    if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
                         System.out.println("配置主题为Dark");
-                    } else if(line.substring(line.indexOf('=') + 1).trim().equals("Light")){
+                    } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
                         System.out.println("配置主题为Light");
-                    } else{
+                    } else {
                         FlatDarculaLaf.setup();
                         System.out.println("配置主题为Darcula");
                     }
