@@ -9,14 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e0ba009-bdb1-4117-b276-933e24db168e" name="更改" comment="重构 初版完成">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BookManager_JavaHW.iml" beforeDir="false" afterPath="$PROJECT_DIR$/BookManager_JavaHW.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/indi/frames/ManageFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/indi/frames/ManageFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/indi/frames/StartFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/indi/frames/StartFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/indi/frames/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/indi/frames/User.java" afterDir="false" />
-    </list>
+    <list default="true" id="9e0ba009-bdb1-4117-b276-933e24db168e" name="更改" comment="重构 初版完成" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
