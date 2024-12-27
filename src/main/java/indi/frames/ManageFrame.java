@@ -111,10 +111,20 @@ public class ManageFrame extends JFrame {
         userScrollPane.setPreferredSize(new Dimension(200, 300));
 
         // 编辑面板
-        JPanel editPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel editPanel = new JPanel(new GridLayout(7, 2, 10, 20));
         JTextField usernameField = new JTextField();
         JPasswordField passwordField = new JPasswordField(); // 使用 JPasswordField
-        JTextField typeField = new JTextField();
+        // 创建 JRadioButton
+        JRadioButton adminRadioButton = new JRadioButton("管理");
+        JRadioButton teacherRadioButton = new JRadioButton("教师");
+        JRadioButton studentRadioButton = new JRadioButton("学生");
+
+        // 创建 ButtonGroup
+        ButtonGroup typeButtonGroup = new ButtonGroup();
+        typeButtonGroup.add(adminRadioButton);
+        typeButtonGroup.add(teacherRadioButton);
+        typeButtonGroup.add(studentRadioButton);
+
         JTextField isWhoField = new JTextField();
 
         editPanel.add(new JLabel("用户名:"));
@@ -122,7 +132,11 @@ public class ManageFrame extends JFrame {
         editPanel.add(new JLabel("密码:"));
         editPanel.add(passwordField);
         editPanel.add(new JLabel("用户类型:"));
-        editPanel.add(typeField);
+        JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 使用 JPanel 容纳单选按钮
+        radioPanel.add(adminRadioButton);
+        radioPanel.add(teacherRadioButton);
+        radioPanel.add(studentRadioButton);
+        editPanel.add(radioPanel); // 将 JPanel 添加到 editPanel
         editPanel.add(new JLabel("对应人:"));
         editPanel.add(isWhoField);
 
@@ -137,7 +151,14 @@ public class ManageFrame extends JFrame {
                     User selectedUser = getUserByIswho(selectedUsername);
                     String newUsername = usernameField.getText();
                     char[] newPasswordChars = passwordField.getPassword(); // 获取密码字符数组
-                    String newType = typeField.getText();
+                    String newType = null;
+                    if (adminRadioButton.isSelected()) {
+                        newType = "管理";
+                    } else if (teacherRadioButton.isSelected()) {
+                        newType = "教师";
+                    } else if (studentRadioButton.isSelected()) {
+                        newType = "学生";
+                    }
                     String newIsWho = isWhoField.getText();
 
                     try (Connection connection = DBUtil.getConnection()) {
@@ -211,7 +232,13 @@ public class ManageFrame extends JFrame {
                     if (selectedUser != null) {
                         usernameField.setText(selectedUser.getUsername());
                         //passwordField.setText(selectedUser.getPassword()); // 不显示密码
-                        typeField.setText(selectedUser.getType());
+                        if (selectedUser.getType().equals("管理")) {
+                            adminRadioButton.setSelected(true);
+                        } else if (selectedUser.getType().equals("教师")) {
+                            teacherRadioButton.setSelected(true);
+                        } else if (selectedUser.getType().equals("学生")) {
+                            studentRadioButton.setSelected(true);
+                        }
                         isWhoField.setText(selectedUser.getIsWho());
                     }
                 }
