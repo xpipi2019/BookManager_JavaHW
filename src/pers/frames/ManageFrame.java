@@ -1,5 +1,7 @@
 package pers.frames;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pers.Book;
 import pers.dao.DBUtil;
 import pers.roles.Person;
@@ -21,15 +23,17 @@ import java.util.Map;
  * 管理者使用界面 ManageFrame
  */
 public class ManageFrame extends JFrame {
+    private static final Logger logger = LoggerFactory.getLogger(ManageFrame.class);
     private Map<String, User> usersMap;
     private Map<String, Person> personsMap;
     private ArrayList<Book> books;
 
     /**
      * 构造函数，初始化管理界面
-     * @param usersMap 存储用户数据的Map
+     *
+     * @param usersMap   存储用户数据的Map
      * @param personsMap 存储Person数据的Map
-     * @param books 存储书籍数据的ArrayList
+     * @param books      存储书籍数据的ArrayList
      */
     public ManageFrame(Map<String, User> usersMap, Map<String, Person> personsMap, ArrayList<Book> books) {
         this.usersMap = usersMap;
@@ -41,13 +45,15 @@ public class ManageFrame extends JFrame {
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(400, 300));
 
-        // 窗体退出事件 登陆后退出：正常退出，返回0
+        // 窗体退出事件 登陆前退出：异常退出，返回-1
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(ManageFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    System.exit(0);
+                    System.exit(-1);
+                } else{
+                    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 }
             }
         });
@@ -77,6 +83,7 @@ public class ManageFrame extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        logger.info("ManageFrame initialized successfully.");
     }
 
     /**
@@ -155,22 +162,28 @@ public class ManageFrame extends JFrame {
                                         if (personRowsAffected > 0) {
                                             relatedPerson.setName(newIsWho);
                                             JOptionPane.showMessageDialog(dialog, "用户数据和相关人员数据已成功修改！");
+                                            logger.info("User data and related person data updated successfully for user: {}", newUsername);
                                         } else {
                                             JOptionPane.showMessageDialog(dialog, "修改人员数据失败，可能人员不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                                            logger.error("Failed to update person data for user: {}", newUsername);
                                         }
                                     }
                                 } else {
                                     JOptionPane.showMessageDialog(dialog, "未找到相关人员信息，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                                    logger.error("Related person information not found for user: {}", newUsername);
                                 }
                             } else {
                                 JOptionPane.showMessageDialog(dialog, "修改用户数据失败，可能用户不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                                logger.error("Failed to update user data for user: {}", newUsername);
                             }
                         }
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(dialog, "修改用户数据出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                        logger.error("Database error occurred while updating user data for user: {}", newUsername, ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(dialog, "请选择一个用户！");
+                    logger.warn("No user selected for modification.");
                 }
             }
         });
@@ -202,6 +215,7 @@ public class ManageFrame extends JFrame {
 
     /**
      * 根据用户名从 usersMap 中获取用户对象
+     *
      * @param is_who 用户对应的Person名称
      * @return 用户对象
      */
@@ -260,9 +274,11 @@ public class ManageFrame extends JFrame {
                         }
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(dialog, "查询用户借阅书籍信息出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                        logger.error("Database error occurred while querying user borrowed books for user: {}", selectedIswho, ex);
                     }
                 } else {
                     borrowedBooksArea.setText("找不到对应的用户信息！");
+                    logger.warn("User information not found for user: {}", selectedIswho);
                 }
             }
         });
@@ -330,15 +346,19 @@ public class ManageFrame extends JFrame {
                             selectedBook.setAuthor(newAuthor);
                             selectedBook.setBookType(newBookType);
                             JOptionPane.showMessageDialog(dialog, "书籍信息已成功修改！");
+                            logger.info("Book information updated successfully for book ID: {}", selectedBook.getBookId());
                         } else {
                             JOptionPane.showMessageDialog(dialog, "修改书籍信息失败，可能书籍不存在或其他原因，请检查！", "错误", JOptionPane.ERROR_MESSAGE);
+                            logger.error("Failed to update book information for book ID: {}", selectedBook.getBookId());
                         }
                     }
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(dialog, "修改书籍信息出现数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    logger.error("Database error occurred while updating book information for book ID: {}", selectedBook.getBookId(), ex);
                 }
             } else {
                 JOptionPane.showMessageDialog(dialog, "请选择一本书！");
+                logger.warn("No book selected for modification.");
             }
         });
 

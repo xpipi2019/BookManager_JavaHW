@@ -12,16 +12,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c364c61-282f-4c1c-826c-23ff182d9d80" name="更改" comment="gitignore修正">
+    <list default="true" id="2c364c61-282f-4c1c-826c-23ff182d9d80" name="更改" comment="添加菜单界面，StartFrame UI改动">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BookManager_JavaHW.iml" beforeDir="false" afterPath="$PROJECT_DIR$/BookManager_JavaHW.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/GUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/frames/ConfigManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/utils/ConfigManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/dao/BookOperate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/dao/BookOperate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/dao/DBUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/dao/DBUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/dao/UserDaoImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/dao/UserDaoImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/ManageFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/ManageFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pers/frames/PreLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/utils/PreLoader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/StartFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/StartFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/StudentFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/StudentFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pers/frames/TeacherFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/TeacherFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/frames/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/frames/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/roles/Person.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/roles/Person.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pers/utils/ConfigManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pers/utils/ConfigManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,8 +58,8 @@
   "keyToString": {
     "Downloaded.Files.Path.Enabled": "true",
     "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "true",
-    "Repository.Attach.Sources": "true",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
@@ -81,6 +86,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\bookmanager2\BookManager_JavaHW\src\pers\dao" />
       <recent name="D:\bookmanager2\BookManager_JavaHW\lib" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\XPIPI\IdeaProjects\BookManager_JavaHW\src" />
     </key>
   </component>
   <component name="RunManager">
@@ -152,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735275450426</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="添加菜单界面，StartFrame UI改动">
+      <option name="closed" value="true" />
+      <created>1735279695604</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1735279695604</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -161,6 +177,7 @@
     <MESSAGE value="将StartFrame的Load操作移到接口中实现，优化ManageFrame的显示" />
     <MESSAGE value="添加详细注释 开发者友好化" />
     <MESSAGE value="gitignore修正" />
-    <option name="LAST_COMMIT_MESSAGE" value="gitignore修正" />
+    <MESSAGE value="添加菜单界面，StartFrame UI改动" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加菜单界面，StartFrame UI改动" />
   </component>
 </project>

@@ -3,12 +3,16 @@ package pers.utils;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 
 public class PreLoader {
+    private static final Logger logger = LoggerFactory.getLogger(PreLoader.class);
+
     // 定义配置文件名常量 String
     // 用来保存一些功能设置，在每次打开时加载
     private static final String CONFIG_FILE = "config.ini";
@@ -27,6 +31,7 @@ public class PreLoader {
 
         // 初次启动，无配置文件
         if (!configFile.exists()) {
+            logger.info("Config file does not exist. Returning default theme: Light");
             return "Light";
         }
 
@@ -53,15 +58,15 @@ public class PreLoader {
                     if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
                         theme = "Dark";
-                        System.out.println("配置主题为Dark");
+                        logger.debug("Configured theme to Dark");
                     } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
                         theme = "Light";
-                        System.out.println("配置主题为Light");
+                        logger.debug("Configured theme to Light");
                     } else {
                         FlatDarculaLaf.setup();
                         theme = "Darcula";
-                        System.out.println("配置主题为Darcula");
+                        logger.debug("Configured theme to Darcula");
                     }
                 }
             }
@@ -73,6 +78,7 @@ public class PreLoader {
             rememberMeBox.setSelected(rememberMeStatus);
 
         } catch (IOException e) {
+            logger.error("Failed to load config file", e);
             System.out.println("配置文件加载失败: " + e.getMessage());
         }
         return theme;
@@ -87,6 +93,7 @@ public class PreLoader {
         // 初次启动，无配置文件
         if (!configFile.exists()) {
             FlatLightLaf.setup();
+            logger.info("Config file does not exist. Setting default theme: Light");
         }
 
         CustomizingTheme();
@@ -98,44 +105,46 @@ public class PreLoader {
                     String themeValue = line.substring(line.indexOf('=') + 1).trim();
                     if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
-                        System.out.println("配置主题为Dark");
+                        logger.debug("Configured theme to Dark");
                     } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
-                        System.out.println("配置主题为Light");
+                        logger.debug("Configured theme to Light");
                     } else {
                         FlatDarculaLaf.setup();
-                        System.out.println("配置主题为Darcula");
+                        logger.debug("Configured theme to Darcula");
                     }
                 }
             }
         } catch (IOException e) {
+            logger.error("Failed to load config file", e);
             System.out.println("配置文件加载失败: " + e.getMessage());
         }
     }
 
     private static void CustomizingTheme() {
-    // 设置按钮的圆角半径为 999，使其接近圆形
-    UIManager.put("Button.arc", 999);
-    // 设置组件的圆角半径为 999，使其接近圆形
-    UIManager.put("Component.arc", 999);
-    // 设置进度条的圆角半径为 999，使其接近圆形
-    UIManager.put("ProgressBar.arc", 999);
-    // 设置文本组件的圆角半径为 999，使其接近圆形
-    UIManager.put("TextComponent.arc", 999);
+        // 设置按钮的圆角半径为 999，使其接近圆形
+        UIManager.put("Button.arc", 999);
+        // 设置组件的圆角半径为 999，使其接近圆形
+        UIManager.put("Component.arc", 999);
+        // 设置进度条的圆角半径为 999，使其接近圆形
+        UIManager.put("ProgressBar.arc", 999);
+        // 设置文本组件的圆角半径为 999，使其接近圆形
+        UIManager.put("TextComponent.arc", 999);
 
-    // 设置组件的箭头类型为三角形
-    UIManager.put("Component.arrowType", "triangle");
+        // 设置组件的箭头类型为三角形
+        UIManager.put("Component.arrowType", "triangle");
 
-    // 设置滚动条轨道的圆角半径为 999，使其接近圆形
-    UIManager.put("ScrollBar.trackArc", 999);
-    // 设置滚动条滑块的圆角半径为 999，使其接近圆形
-    UIManager.put("ScrollBar.thumbArc", 999);
-    // 设置滚动条轨道的内边距
-    UIManager.put("ScrollBar.trackInsets", new Insets(2, 4, 2, 4));
-    // 设置滚动条滑块的内边距
-    UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
-    // 设置滚动条轨道的颜色
-    UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
-}
+        // 设置滚动条轨道的圆角半径为 999，使其接近圆形
+        UIManager.put("ScrollBar.trackArc", 999);
+        // 设置滚动条滑块的圆角半径为 999，使其接近圆形
+        UIManager.put("ScrollBar.thumbArc", 999);
+        // 设置滚动条轨道的内边距
+        UIManager.put("ScrollBar.trackInsets", new Insets(2, 4, 2, 4));
+        // 设置滚动条滑块的内边距
+        UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
+        // 设置滚动条轨道的颜色
+        UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
 
+        logger.debug("Customizing theme settings loaded");
+    }
 }

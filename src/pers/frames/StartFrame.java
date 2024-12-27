@@ -3,6 +3,8 @@ package pers.frames;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pers.Book;
 import pers.dao.UserDao;
 import pers.dao.UserDaoImpl;
@@ -28,6 +30,7 @@ import static pers.dao.BookOperate.readBookData;
  * 登录界面 StartFrame
  */
 public class StartFrame extends JFrame {
+    private static final Logger logger = LoggerFactory.getLogger(StartFrame.class);
     // 用户类型 JComboBox
     private final JComboBox<String> userTypeComboBox;
     // 用户名 JTextField
@@ -68,6 +71,7 @@ public class StartFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(StartFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
+                    logger.info("Exit before login.");
                     System.exit(-1);
                 } else{
                     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -134,7 +138,7 @@ public class StartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FlatDarculaLaf.setup();
-                System.out.println("Darcula主题已启用");
+                logger.info("Darcula theme enabled");
                 updateUI();
                 theme = "Darcula";
             }
@@ -144,7 +148,7 @@ public class StartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FlatLightLaf.setup();
-                System.out.println("Light主题已启用");
+                logger.info("Light theme enabled");
                 updateUI();
                 theme = "Light";
             }
@@ -154,7 +158,7 @@ public class StartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FlatDarkLaf.setup();
-                System.out.println("Dark主题已启用");
+                logger.info("Dark theme enabled");
                 updateUI();
                 theme = "Dark";
             }
@@ -199,6 +203,8 @@ public class StartFrame extends JFrame {
         // 窗口居中
         setLocationRelativeTo(null);
         setVisible(true);
+
+        logger.info("StartFrame initialized successfully.");
     }
 
     /**
@@ -219,6 +225,7 @@ public class StartFrame extends JFrame {
 
                 if (user.getPassword().equals(password) && user.getType().equals(selectedType)) {
                     JOptionPane.showMessageDialog(StartFrame.this, "登录成功！欢迎 " + user.getType() + " " + username);
+                    logger.info("Login successful for user: {}", username);
 
                     // 保存登录信息 -在登录成功后调用-
                     ConfigManager.saveLoginInfo(username, password, selectedType, rememberMeStatus, theme);
@@ -229,9 +236,11 @@ public class StartFrame extends JFrame {
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(StartFrame.this, "用户名或密码错误！", "登录失败", JOptionPane.WARNING_MESSAGE);
+                    logger.warn("Incorrect username or password for user: {}", username);
                 }
             } else {
                 JOptionPane.showMessageDialog(StartFrame.this, "用户名不存在！", "登录失败", JOptionPane.WARNING_MESSAGE);
+                logger.warn("Username does not exist: {}", username);
             }
         }
 

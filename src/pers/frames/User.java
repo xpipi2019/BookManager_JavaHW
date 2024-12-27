@@ -1,7 +1,12 @@
 package pers.frames;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // 用户类
 public class User {
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
+
     // 用户类型
     private String type;
     // 用户名
@@ -20,6 +25,7 @@ public class User {
      * @param isWho    用户标识
      */
     public User(String type, String username, String password, String isWho) {
+        logger.debug("Creating new User instance with type: {}, username: {}, isWho: {}", type, username, isWho);
         this.setType(type);
         this.setUsername(username);
         this.setPassword(password);
@@ -33,6 +39,7 @@ public class User {
      * @return 用户类型
      */
     public String getType() {
+        logger.debug("Getting type: {}", type);
         return type;
     }
 
@@ -44,9 +51,11 @@ public class User {
      */
     public void setType(String type) {
         if (type == null || type.isEmpty()) {
+            logger.error("Attempt to set type to null or empty");
             throw new IllegalArgumentException("类型不能为空");
         }
         this.type = type;
+        logger.debug("Set type to: {}", type);
     }
 
     // 获取用户名
@@ -56,6 +65,7 @@ public class User {
      * @return 用户名
      */
     public String getUsername() {
+        logger.debug("Getting username: {}", username);
         return username;
     }
 
@@ -67,9 +77,11 @@ public class User {
      */
     public void setUsername(String username) {
         if (username == null || username.isEmpty()) {
+            logger.error("Attempt to set username to null or empty");
             throw new IllegalArgumentException("用户名不能为空");
         }
         this.username = username;
+        logger.debug("Set username to: {}", username);
     }
 
     // 获取密码
@@ -79,6 +91,7 @@ public class User {
      * @return 密码
      */
     public String getPassword() {
+        logger.debug("Getting password");
         return password;
     }
 
@@ -90,9 +103,11 @@ public class User {
      */
     public void setPassword(String password) {
         if (password == null || password.isEmpty()) {
+            logger.error("Attempt to set password to null or empty");
             throw new IllegalArgumentException("密码不能为空");
         }
         this.password = password;
+        logger.debug("Set password");
     }
 
     // 获取用户标识
@@ -102,6 +117,7 @@ public class User {
      * @return 用户标识
      */
     public String getIsWho() {
+        logger.debug("Getting isWho: {}", isWho);
         return isWho;
     }
 
@@ -113,8 +129,10 @@ public class User {
      */
     public void setIsWho(String isWho) {
         if (isWho == null || isWho.isEmpty()) {
+            logger.error("Attempt to set isWho to null or empty");
             throw new IllegalArgumentException("用户标识不能为空");
         }
         this.isWho = isWho;
+        logger.debug("Set isWho to: {}", isWho);
     }
 }

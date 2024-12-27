@@ -1,5 +1,7 @@
 package pers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 /**
@@ -7,6 +9,8 @@ import java.io.Serializable;
  */
 // 书籍类，实现Serializable接口以支持序列化
 public class Book implements Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(Book.class);
+
     // 书号
     private int bookId;
 
@@ -42,14 +46,15 @@ public class Book implements Serializable {
         // 默认状态为未借出，借阅人ID为0
         this.isBorrowed = false;
         this.borrowedById = 0;
+        logger.debug("Created new Book instance with bookId: {}, title: {}, author: {}, bookType: {}", bookId, title, author, bookType);
     }
 
     // 重写toString方法
     @Override
     public String toString() {
-        return bookId +
-                "|《 " + title +
-                "》-- " + author;
+        String bookInfo = bookId + "|《 " + title + "》-- " + author;
+        logger.debug("Generated book info: {}", bookInfo);
+        return bookInfo;
     }
 
     // 返回书的属性的函数 以及修改书的属性的函数
@@ -60,6 +65,7 @@ public class Book implements Serializable {
      * @return 书号
      */
     public int getBookId() {
+        logger.debug("Getting bookId: {}", bookId);
         return bookId;
     }
 
@@ -69,6 +75,7 @@ public class Book implements Serializable {
      * @param bookId 书号
      */
     public void setBookId(int bookId) {
+        logger.debug("Setting bookId to: {}", bookId);
         this.bookId = bookId;
     }
 
@@ -78,6 +85,7 @@ public class Book implements Serializable {
      * @return 书名
      */
     public String getTitle() {
+        logger.debug("Getting title: {}", title);
         return title;
     }
 
@@ -87,6 +95,7 @@ public class Book implements Serializable {
      * @param title 书名
      */
     public void setTitle(String title) {
+        logger.debug("Setting title to: {}", title);
         this.title = title;
     }
 
@@ -96,6 +105,7 @@ public class Book implements Serializable {
      * @return 作者
      */
     public String getAuthor() {
+        logger.debug("Getting author: {}", author);
         return author;
     }
 
@@ -105,6 +115,7 @@ public class Book implements Serializable {
      * @param author 作者
      */
     public void setAuthor(String author) {
+        logger.debug("Setting author to: {}", author);
         this.author = author;
     }
 
@@ -114,6 +125,7 @@ public class Book implements Serializable {
      * @return 类别
      */
     public String getBookType() {
+        logger.debug("Getting bookType: {}", bookType);
         return bookType;
     }
 
@@ -123,6 +135,7 @@ public class Book implements Serializable {
      * @param bookType 类别
      */
     public void setBookType(String bookType) {
+        logger.debug("Setting bookType to: {}", bookType);
         this.bookType = bookType;
     }
 
@@ -132,6 +145,7 @@ public class Book implements Serializable {
      * @return 是否被借出
      */
     public boolean isBorrowed() {
+        logger.debug("Getting isBorrowed: {}", isBorrowed);
         return isBorrowed;
     }
 
@@ -141,6 +155,7 @@ public class Book implements Serializable {
      * @param nowStatus 借出状态
      */
     public void setBorrowed(boolean nowStatus) {
+        logger.debug("Setting isBorrowed to: {}", nowStatus);
         this.isBorrowed = nowStatus;
     }
 
@@ -150,6 +165,7 @@ public class Book implements Serializable {
      * @return 借阅人ID
      */
     public int getBorrowedById() {
+        logger.debug("Getting borrowedById: {}", borrowedById);
         return borrowedById;
     }
 
@@ -159,6 +175,7 @@ public class Book implements Serializable {
      * @param borrowedById 借阅人ID
      */
     public void setBorrowedById(int borrowedById) {
+        logger.debug("Setting borrowedById to: {}", borrowedById);
         this.borrowedById = borrowedById;
     }
 }

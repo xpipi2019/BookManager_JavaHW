@@ -3,6 +3,8 @@ package pers.frames;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pers.Book;
 import pers.dao.DBUtil;
 import pers.roles.Student;
@@ -27,6 +29,7 @@ import static pers.utils.ConfigManager.saveTheme;
  * 学生使用界面 StudentFrame
  */
 public class StudentFrame extends JFrame {
+    private static final Logger logger = LoggerFactory.getLogger(StudentFrame.class);
     // 学生数据
     private Student student;
     // JList对象
@@ -56,6 +59,7 @@ public class StudentFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(StudentFrame.this, "是否确定要退出本系统？", "确认退出", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
+                    logger.info("Exit after login.");
                     System.exit(0);
                 } else{
                     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -204,6 +208,8 @@ public class StudentFrame extends JFrame {
 
         // 初始刷新书籍列表
         refreshBooks(bookListModel);
+
+        logger.info("StartFrame initialized successfully.");
     }
 
     /**
@@ -233,6 +239,7 @@ public class StudentFrame extends JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "图书数据从数据库读取失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
+            logger.error("Failed to retrieve book data from database: " + e.getMessage(), e);
         }
         setStudentBorrowCount(student);
     }
@@ -286,16 +293,20 @@ public class StudentFrame extends JFrame {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook == null) {
             JOptionPane.showMessageDialog(this, "请选择一本书！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("No book selected.");
             return;
         }
 
         if (selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书已经被借出！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("Book already borrowed.");
         } else if (student.getBorrowedBooksCount() >= MAX_BORROW_LIMIT) {
             JOptionPane.showMessageDialog(this, "您最多同时借三本书！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("Maximum borrow limit reached.");
         } else {
             BookOperate.changeBookBorrowedStatus(booksData, selectedBook, student.getId(), StudentFrame.this);
             JOptionPane.showMessageDialog(this, "成功借阅书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
+            logger.info("Book borrowed successfully: {}", selectedBook.getTitle());
             refreshBooks(bookListModel);
             updateBookInfo();
         }
@@ -310,18 +321,22 @@ public class StudentFrame extends JFrame {
         Book selectedBook = bookList.getSelectedValue();
         if (selectedBook == null) {
             JOptionPane.showMessageDialog(this, "请选择一本书！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("No book selected.");
             return;
         }
 
         if (!selectedBook.isBorrowed()) {
             JOptionPane.showMessageDialog(this, "这本书没有被借出！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("Book not borrowed.");
         } else if (selectedBook.getBorrowedById() == student.getId()) {
             BookOperate.changeBookBorrowedStatus(booksData, selectedBook, student.getId(), StudentFrame.this);
             JOptionPane.showMessageDialog(this, "成功归还书籍：" + selectedBook.getTitle(), "提示", JOptionPane.INFORMATION_MESSAGE);
             refreshBooks(bookListModel);
+            logger.info("Book returned successfully: {}", selectedBook.getTitle());
             updateBookInfo();
         } else {
             JOptionPane.showMessageDialog(this, "哎呀，这本书好像不是您借的！", "提示", JOptionPane.WARNING_MESSAGE);
+            logger.warn("Incorrect username or password for user: {}", student.getId());
         }
     }
 }

@@ -1,5 +1,7 @@
 package pers.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pers.frames.User;
 import pers.roles.Person;
 
@@ -9,10 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class UserDaoImpl implements UserDao {
-    private static final Logger logger = Logger.getLogger(UserDaoImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 
     /**
      * 从数据库加载用户数据
@@ -31,8 +32,9 @@ public class UserDaoImpl implements UserDao {
                 String isWho = resultSet.getString("is_who");
                 usersMap.put(username, new User(type, username, password, isWho));
             }
+            logger.info("User data loaded successfully.");
         } catch (SQLException e) {
-            logger.severe("用户数据从数据库加载失败：" + e.getMessage());
+            logger.error("Failed to load user data from the database.", e);
         }
         return usersMap;
     }
@@ -53,8 +55,9 @@ public class UserDaoImpl implements UserDao {
                 String gender = resultSet.getString("gender");
                 personsMap.put(name, new Person(name, id, gender));
             }
+            logger.info("Person data loaded successfully.");
         } catch (SQLException e) {
-            logger.severe("人员数据从数据库加载失败：" + e.getMessage());
+            logger.error("Failed to load person data from the database.", e);
         }
         return personsMap;
     }

@@ -1,9 +1,13 @@
 package pers.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.io.*;
 
 public class ConfigManager {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
+
     // 定义配置文件名常量
     private static final String CONFIG_FILE = "config.ini";
 
@@ -27,7 +31,9 @@ public class ConfigManager {
             bw.write("rememberMe=" + rememberMe + "\n");
             // 写入主题设置
             bw.write("theme=" + theme + "\n");
+            logger.debug("Saved login info: username={}, rememberMe={}, theme={}", username, rememberMe, theme);
         } catch (IOException e) {
+            logger.error("Failed to save login info", e);
             // 显示错误信息对话框
             JOptionPane.showMessageDialog(null, "保存登录信息失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
@@ -57,11 +63,12 @@ public class ConfigManager {
                 } else if (line.startsWith("rememberMe=")) {
                     rememberMeStatus = Boolean.parseBoolean(line.substring(line.indexOf('=') + 1).trim());
                 }
-
-                saveLoginInfo(username, password, usertype, rememberMeStatus, themeTosave);
             }
 
+            saveLoginInfo(username, password, usertype, rememberMeStatus, themeTosave);
+            logger.debug("Saved theme: {}", themeTosave);
         } catch (IOException e) {
+            logger.error("Failed to load config file", e);
             System.out.println("配置文件加载失败: " + e.getMessage());
         }
     }
