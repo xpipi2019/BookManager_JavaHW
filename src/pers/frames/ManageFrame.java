@@ -102,7 +102,7 @@ public class ManageFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedUsername = userList.getSelectedValue();
-                if (selectedUsername!= null) {
+                if (selectedUsername != null) {
                     User selectedUser = getUserByIswho(selectedUsername);
                     String newUsername = usernameField.getText();
                     String newPassword = passwordField.getText();
@@ -128,7 +128,7 @@ public class ManageFrame extends JFrame {
 
                                 // 更新 persons 表中对应人员的数据
                                 Person relatedPerson = personsMap.get(selectedUser.getIsWho());
-                                if (relatedPerson!= null) {
+                                if (relatedPerson != null) {
                                     String updatePersonQuery = "UPDATE persons SET name =? WHERE id =?";
                                     try (PreparedStatement personPreparedStatement = connection.prepareStatement(updatePersonQuery)) {
                                         personPreparedStatement.setString(1, newIsWho);
@@ -153,6 +153,22 @@ public class ManageFrame extends JFrame {
                     }
                 } else {
                     JOptionPane.showMessageDialog(dialog, "请选择一个用户！");
+                }
+            }
+        });
+
+        // 用户选择监听器
+        userList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedIswho = userList.getSelectedValue();
+                if (selectedIswho != null) {
+                    User selectedUser = getUserByIswho(selectedIswho);
+                    if (selectedUser != null) {
+                        usernameField.setText(selectedUser.getUsername());
+                        passwordField.setText(selectedUser.getPassword());
+                        typeField.setText(selectedUser.getType());
+                        isWhoField.setText(selectedUser.getIsWho());
+                    }
                 }
             }
         });
@@ -182,11 +198,11 @@ public class ManageFrame extends JFrame {
         dialog.setLayout(new BorderLayout());
 
         // 用户选择列表
-        DefaultListModel<String > userListModel = new DefaultListModel<>();
+        DefaultListModel<String> userListModel = new DefaultListModel<>();
         for (User user : usersMap.values()) {
             userListModel.addElement(user.getIsWho());
         }
-        JList<String > userList = new JList<>(userListModel);
+        JList<String> userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane userScrollPane = new JScrollPane(userList);
 
@@ -196,7 +212,7 @@ public class ManageFrame extends JFrame {
         JScrollPane booksScrollPane = new JScrollPane(borrowedBooksArea);
 
         userList.addListSelectionListener(e -> {
-            String  selectedIswho = userList.getSelectedValue();
+            String selectedIswho = userList.getSelectedValue();
             if (selectedIswho != null) {
                 borrowedBooksArea.setText(""); // 清空当前内容
                 User selectedUser = getUserByIswho(selectedIswho);
@@ -294,6 +310,18 @@ public class ManageFrame extends JFrame {
             }
         });
 
+        // 书籍选择监听器
+        bookList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                Book selectedBook = bookList.getSelectedValue();
+                if (selectedBook != null) {
+                    titleField.setText(selectedBook.getTitle());
+                    authorField.setText(selectedBook.getAuthor());
+                    bookTypeField.setText(selectedBook.getBookType());
+                }
+            }
+        });
+
         // 布局
         dialog.add(bookScrollPane, BorderLayout.WEST);
         dialog.add(editPanel, BorderLayout.CENTER);
@@ -302,5 +330,4 @@ public class ManageFrame extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-
 }

@@ -168,6 +168,7 @@ public class StudentFrame extends JFrame {
         }
         student.setBorrowedBooksCount(Count);
     }
+
     private void updateBookInfo() {
         // 用选中的图书来创建对象 selectedBook
         Book selectedBook = bookList.getSelectedValue();

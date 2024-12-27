@@ -46,9 +46,10 @@ public class StartFrame extends JFrame {
     // 定义配置文件名常量 String
     // 用来保存一些功能设置，在每次打开时加载
     private final String CONFIG_FILE = "config.ini";
-    // 定义用户件名常量 String
-    private final String USERS_FILE = "users.txt";
     private final String PERSONS_FILE = "persons.txt";
+    // 定义主题名 String
+    private String theme;
+
 
     // 初始化登录界面
     public StartFrame() {
@@ -110,7 +111,7 @@ public class StartFrame extends JFrame {
         add(actionPanel);
 
         // 如果保存了登录信息在配置文件中，则预填充用户名和密码信息
-        prefillLoginInfo();
+        theme = PreLoader.loadConfig(usernameField, passwordField, userTypeComboBox, rememberMeBox);
 
         // 按钮点击事件
         loginButton.addActionListener(new LoginButtonListener());
@@ -161,46 +162,6 @@ public class StartFrame extends JFrame {
         }
     }
 
-    // 预填充保存的登录信息
-    private void prefillLoginInfo() {
-        File configFile = new File(CONFIG_FILE);
-        // 初次启动，无配置文件
-        if (!configFile.exists()) {
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
-            String line;
-            String username = "";
-            String password = "";
-            String usertype = "";
-            boolean rememberMeStatus = false;
-
-            // BufferedReader文件流 读取配置文件内容
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("username=")) {
-                    username = line.substring(line.indexOf('=') + 1).trim();
-                } else if (line.startsWith("password=")) {
-                    password = line.substring(line.indexOf('=') + 1).trim();
-                } else if (line.startsWith("usertype=")) {
-                    usertype = line.substring(line.indexOf('=') + 1).trim();
-                } else if (line.startsWith("rememberMe=")) {
-                    rememberMeStatus = Boolean.parseBoolean(line.substring(line.indexOf('=') + 1).trim());
-                }
-            }
-
-            // 填充配置文件内容
-            usernameField.setText(username);
-            passwordField.setText(password);
-            userTypeComboBox.setSelectedItem(usertype);
-            rememberMeBox.setSelected(rememberMeStatus);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "配置文件加载失败: " + e.getMessage(),
-                    "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     // 保存登录信息到配置文件 -在登录成功后调用-
     private void saveLoginInfo(String username, String password, String usertype, boolean rememberMe) {
         // BufferedWriter文件流 写入配置文件内容
@@ -209,6 +170,7 @@ public class StartFrame extends JFrame {
             bw.write("password=" + (rememberMe ? password : "") + "\n");
             bw.write("usertype=" + usertype + "\n");
             bw.write("rememberMe=" + rememberMe + "\n");
+            bw.write("theme=" + theme + "\n");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "保存登录信息失败: " + e.getMessage(),
                     "错误", JOptionPane.ERROR_MESSAGE);
