@@ -1,6 +1,8 @@
 package main.java.indi.utils;
 
 import main.java.indi.dao.DBUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -13,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginUtil {
+    private static final Logger logger = LoggerFactory.getLogger(PreLoader.class);
     public static boolean verifyPassword(String username, String enteredPassword) {
         try (Connection connection = DBUtil.getConnection()) {
             String query = "SELECT password, salt FROM users WHERE username = ?";
@@ -22,17 +25,16 @@ public class LoginUtil {
                     if (resultSet.next()) {
                         String storedHash = resultSet.getString("password");
                         String storedSalt = resultSet.getString("salt");
-                        System.out.println("entedPassword: " + enteredPassword);
+                        logger.info("EntedPassword is " + enteredPassword);
                         String enteredHash = hashPassword(enteredPassword, storedSalt); // 使用相同的哈希算法和盐值
-                        System.out.println("storedHash: " + storedHash);
-                        System.out.println("enteredHash: " + enteredHash);
+                        // System.out.println("storedHash: " + storedHash);
+                        // System.out.println("enteredHash: " + enteredHash);
                         return storedHash.equals(enteredHash);
                     }
                 }
             }
         } catch (SQLException | NoSuchAlgorithmException e) {
-            // 处理异常
-            e.printStackTrace(); // 打印异常信息，方便调试
+            logger.error("Failed to establish database connection.", e);
             return false;
         }
         return false;

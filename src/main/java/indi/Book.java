@@ -4,9 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
-/**
- * @author XPIPI
- */
 // 书籍类，实现Serializable接口以支持序列化
 public class Book implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Book.class);
