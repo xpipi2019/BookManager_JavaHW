@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginUtil {
-    private static final Logger logger = LoggerFactory.getLogger(PreLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginUtil.class);
     public static boolean verifyPassword(String username, String enteredPassword) {
         try (Connection connection = DBUtil.getConnection()) {
             String query = "SELECT password, salt FROM users WHERE username = ?";

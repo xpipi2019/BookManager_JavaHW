@@ -30,7 +30,8 @@ public class ConfigManager {
             bw.write("rememberMe=" + rememberMe + "\n");
             // 写入主题设置
             bw.write("theme=" + theme + "\n");
-            logger.debug("Saved login info: username={}, rememberMe={}, theme={}", username, rememberMe, theme);
+            logger.info("Save login info successful");
+            // logger.debug("Saved login info: username={}, rememberMe={}, theme={}", username, rememberMe, theme);
         } catch (IOException e) {
             logger.error("Failed to save login info", e);
             // 显示错误信息对话框
@@ -65,7 +66,7 @@ public class ConfigManager {
             }
 
             saveLoginInfo(username, password, usertype, rememberMeStatus, themeTosave);
-            logger.debug("Saved theme: {}", themeTosave);
+            // logger.debug("Saved theme: {}", themeTosave);
         } catch (IOException e) {
             logger.error("Failed to load config file", e);
             System.out.println("配置文件加载失败: " + e.getMessage());

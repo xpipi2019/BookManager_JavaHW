@@ -56,15 +56,15 @@ public class PreLoader {
                     if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
                         theme = "Dark";
-                        logger.debug("Configured theme to Dark");
+                        logger.info("Configured theme to Dark");
                     } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
                         theme = "Light";
-                        logger.debug("Configured theme to Light");
+                        logger.info("Configured theme to Light");
                     } else {
                         FlatDarculaLaf.setup();
                         theme = "Darcula";
-                        logger.debug("Configured theme to Darcula");
+                        logger.info("Configured theme to Darcula");
                     }
                 }
             }
@@ -103,19 +103,19 @@ public class PreLoader {
                     String themeValue = line.substring(line.indexOf('=') + 1).trim();
                     if (themeValue.equals("Dark")) {
                         FlatDarkLaf.setup();
-                        logger.debug("Configured theme to Dark");
+                        logger.info("Configured theme to Dark");
                     } else if (themeValue.equals("Light")) {
                         FlatLightLaf.setup();
-                        logger.debug("Configured theme to Light");
+                        logger.info("Configured theme to Light");
                     } else {
                         FlatDarculaLaf.setup();
-                        logger.debug("Configured theme to Darcula");
+                        logger.info("Configured theme to Darcula");
                     }
                 }
             }
         } catch (IOException e) {
             logger.error("Failed to load config file", e);
-            System.out.println("配置文件加载失败: " + e.getMessage());
+            //System.out.println("配置文件加载失败: " + e.getMessage());
         }
     }
 
@@ -143,6 +143,6 @@ public class PreLoader {
         // 设置滚动条轨道的颜色
         UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
 
-        logger.debug("Customizing theme settings loaded");
+        logger.info("Customizing theme settings loaded");
     }
 }

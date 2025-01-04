@@ -26,7 +26,7 @@ public class User {
      * @param isWho    用户标识
      */
     public User(String type, String username, String password, String isWho) {
-        logger.debug("Creating new User instance with type: {}, username: {}, isWho: {}", type, username, isWho);
+        //logger.debug("Creating new User instance with type: {}, username: {}, isWho: {}", type, username, isWho);
         this.setType(type);
         this.setUsername(username);
         this.setPassword(password);
@@ -40,7 +40,7 @@ public class User {
      * @return 用户类型
      */
     public String getType() {
-        logger.debug("Getting type: {}", type);
+        //logger.debug("Getting type: {}", type);
         return type;
     }
 
@@ -56,7 +56,7 @@ public class User {
             throw new IllegalArgumentException("类型不能为空");
         }
         this.type = type;
-        logger.debug("Set type to: {}", type);
+        //logger.debug("Set type to: {}", type);
     }
 
     // 获取用户名
@@ -66,7 +66,7 @@ public class User {
      * @return 用户名
      */
     public String getUsername() {
-        logger.debug("Getting username: {}", username);
+        //logger.debug("Getting username: {}", username);
         return username;
     }
 
@@ -82,7 +82,7 @@ public class User {
             throw new IllegalArgumentException("用户名不能为空");
         }
         this.username = username;
-        logger.debug("Set username to: {}", username);
+        //logger.debug("Set username to: {}", username);
     }
 
     // 获取密码
@@ -92,7 +92,7 @@ public class User {
      * @return 密码
      */
     public String getPassword() {
-        logger.debug("Getting password");
+        //logger.debug("Getting password");
         return password;
     }
 
@@ -108,7 +108,7 @@ public class User {
             throw new IllegalArgumentException("密码不能为空");
         }
         this.password = password;
-        logger.debug("Set password");
+        //logger.debug("Set password");
     }
 
 
@@ -119,7 +119,7 @@ public class User {
      * @return 用户标识
      */
     public String getIsWho() {
-        logger.debug("Getting isWho: {}", isWho);
+        //logger.debug("Getting isWho: {}", isWho);
         return isWho;
     }
 
@@ -135,7 +135,7 @@ public class User {
             throw new IllegalArgumentException("用户标识不能为空");
         }
         this.isWho = isWho;
-        logger.debug("Set isWho to: {}", isWho);
+        //logger.debug("Set isWho to: {}", isWho);
     }
 
 }

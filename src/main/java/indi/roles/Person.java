@@ -33,7 +33,7 @@ public class Person {
      * @param gender 性别
      */
     public Person(String name, int id, String gender) {
-        logger.debug("Creating new Person instance with name: {}, id: {}, gender: {}", name, id, gender);
+        // logger.debug("Creating new Person instance with name: {}, id: {}, gender: {}", name, id, gender);
         this.name = name;
         this.id = id;
         this.gender = gender;
@@ -47,7 +47,7 @@ public class Person {
      * @return 姓名
      */
     public String getName() {
-        logger.debug("Getting name: {}", name);
+        // logger.debug("Getting name: {}", name);
         return name;
     }
 
@@ -57,7 +57,7 @@ public class Person {
      * @param name 姓名
      */
     public void setName(String name) {
-        logger.debug("Setting name to: {}", name);
+        // logger.debug("Setting name to: {}", name);
         this.name = name;
     }
 
@@ -67,7 +67,7 @@ public class Person {
      * @return 证件号
      */
     public int getId() {
-        logger.debug("Getting id: {}", id);
+        // logger.debug("Getting id: {}", id);
         return id;
     }
 
@@ -77,7 +77,7 @@ public class Person {
      * @param id 证件号
      */
     public void setId(int id) {
-        logger.debug("Setting id to: {}", id);
+        // logger.debug("Setting id to: {}", id);
         this.id = id;
     }
 
@@ -87,7 +87,7 @@ public class Person {
      * @return 性别
      */
     public String getGender() {
-        logger.debug("Getting gender: {}", gender);
+        // logger.debug("Getting gender: {}", gender);
         return gender;
     }
 
@@ -97,7 +97,7 @@ public class Person {
      * @param gender 性别
      */
     public void setGender(String gender) {
-        logger.debug("Setting gender to: {}", gender);
+        // logger.debug("Setting gender to: {}", gender);
         this.gender = gender;
     }
 
@@ -107,7 +107,7 @@ public class Person {
      * @return 已借阅书籍数量
      */
     public int getBorrowedBooksCount() {
-        logger.debug("Getting borrowedBooksCount: {}", borrowedBooksCount);
+        // logger.debug("Getting borrowedBooksCount: {}", borrowedBooksCount);
         return borrowedBooksCount;
     }
 
@@ -117,7 +117,7 @@ public class Person {
      * @param borrowedBooksCount 已借阅书籍数量
      */
     public void setBorrowedBooksCount(int borrowedBooksCount) {
-        logger.debug("Setting borrowedBooksCount to: {}", borrowedBooksCount);
+        // logger.debug("Setting borrowedBooksCount to: {}", borrowedBooksCount);
         this.borrowedBooksCount = borrowedBooksCount;
     }
 
@@ -128,7 +128,7 @@ public class Person {
      * @return 姓名
      */
     public String getNameById(int id) {
-        logger.debug("Getting name by id: {}", id);
+        // logger.debug("Getting name by id: {}", id);
         String name = "无";
         String sql = "SELECT name FROM persons WHERE id =?";
         try (Connection connection = DBUtil.getConnection();
@@ -138,9 +138,9 @@ public class Person {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     name = resultSet.getString("name");
-                    logger.debug("Found name: {} for id: {}", name, id);
+                    // logger.debug("Found name: {} for id: {}", name, id);
                 } else {
-                    logger.debug("No name found for id: {}", id);
+                    // logger.debug("No name found for id: {}", id);
                 }
             }
         } catch (SQLException e) {
